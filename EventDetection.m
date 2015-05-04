@@ -60,7 +60,7 @@ set(handles.minorAxesR, 'XTick', []);
 set(handles.minorAxesR, 'YTick', []);
 set(handles.subjectMenu, 'String', {'A', 'B'});
 set(handles.subjectMenu, 'Value', 1);
-set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8', '9.1', '9.2', '9.3'});
+set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8'});
 set(handles.datasetMenu, 'Value', 1);
 set(handles.zoomInButton, 'Enable', 'off');
 set(handles.zoomOutButton, 'Enable', 'off');
@@ -98,10 +98,10 @@ function subjectMenu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if strcmp(get(handles.datasetMenu, 'String'), 'A')
-    set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8', '9.1', '9.2', '9.3'});
+    set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8'});
     set(handles.datasetMenu, 'Value', 1);
 else
-    set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8', '9.1'});
+    set(handles.datasetMenu, 'String', {'1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3', '4', '5.1', '5.2', '6', '7', '8'});
     set(handles.datasetMenu, 'Value', 1);
 end
 

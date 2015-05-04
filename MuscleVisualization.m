@@ -18,7 +18,7 @@ addpath('Scripts');
     
 % Set parameters
 filterVariant = 'normalized';                     % 'filtered', 'normalized'
-savePath = [getPath, '../Grafiken/Muscle/'];
+savePath = [getPath, filesep, 'Muscle', filesep];
 datasets = {
     '1.1', ...
     '1.2', ...
