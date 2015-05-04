@@ -7,8 +7,10 @@ Please modify the global path in [Scripts/getPath.m](Scripts/getPath.m) and the 
 Main features:
 ---
 * Synchronization and filtering of raw kinematic motion, ground reaction force and muscle activity data
+* Estinmation of anthropometric parameters
 * Estimation of joint center positions
-* Estimation of joint angle trajectories
+* Estimation of joint angle trajectories (not yet included)
 * Decomposition of ground reaction forces during double support phase
+* Detection of step events
 * Estimation of center of pressure trajectories
 * Visualization of processed kinematic motion, ground reaction force and muscle activity data
