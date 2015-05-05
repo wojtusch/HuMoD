@@ -76,7 +76,7 @@ for subjectIndex = 1:length(subjects)
         saveFile = getFile(subject, dataset);
         if saveFile
             [path, file, extention] = fileparts(saveFile);
-            dataFile = [path, filesep, 'Raw data', filesep, 'Muscle ', file, extention];
+            dataFile = [path, filesep, 'Raw data', filesep, file, '-RawMuscle', extention];
             variables = load(dataFile);      
         else
             fprintf('WARNING: No matching data file found!\n');

@@ -11,8 +11,8 @@
 % Please modify the global path in getPath.m and the local paths in getFile.m.
 
 function globalPath = getPath
-globalPath = '';
-if isempty(globalPath) ||  ~exist(globalPath, 'dir')
+globalPath = pwd;
+if isempty(globalPath) || ~exist(globalPath, 'dir')
     fprintf('ERROR: Path not found! Please modify the global path in getPath.m and the local paths in getFile.m.\n');
 end
 end

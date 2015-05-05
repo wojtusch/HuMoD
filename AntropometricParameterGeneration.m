@@ -39,7 +39,7 @@ else
     footLength_L = 271;
     footLength_R = 275;
 end
-saveFile = [getPath, filesep, subject, filesep, 'Parameters.mat'];
+saveFile = [getPath, filesep, subject, filesep, 'Parameters2.mat'];
 initialStartFrame = 7000;
 initialEndFrame = 9000;
 startFrame = 1;
