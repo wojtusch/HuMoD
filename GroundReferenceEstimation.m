@@ -60,14 +60,8 @@ for subjectIndex = 1:length(subjects)
     subject = subjects{subjectIndex};
 
     % Load measured data
-    if strcmp(subject, 'A')
-        load([getPath, '0.2 Ground reference/A/Ground reference.mat']);
-    elseif strcmp(subject, 'B')
-        load([getPath, '0.2 Ground reference/B/Ground reference.mat']);
-    else
-        fprintf('ERROR: No matching data file found!\n');
-        return;
-    end
+    referenceFile = [getPath, filesep, subject, filesep, 'Raw data', filesep, 'GroundReference.mat'];
+    load(referenceFile);
 
     % Fit sensor plane
     sensorModel = [(distanceL1L4 / 2), (distanceL1L4 / 2), -(distanceL1L4 / 2), -(distanceL1L4 / 2); 0, 0, 0, 0; -(distanceL1R2 / 2), (distanceL1R2 / 2), (distanceL1R2 / 2), -(distanceL1R2 / 2)];
