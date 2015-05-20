@@ -26,7 +26,8 @@ if strcmp(subject, 'A')
     gender = 'female';
     origin = 'central european';
     bodyHeight = 1610;
-    bodyMass = 575 / 9.81;
+    bodyMass = 562 / 9.81;
+    equipmentMass = 575 / 9.81 - bodyMass;
     age = 26.8;
     footLength_L = 230;
     footLength_R = 225;
@@ -34,7 +35,8 @@ else
     gender = 'male';
     origin = 'central european';
     bodyHeight = 1790;
-    bodyMass = 845 / 9.81;
+    bodyMass = 832 / 9.81;
+    equipmentMass = 845 / 9.81 - bodyMass;
     age = 32.1;
     footLength_L = 271;
     footLength_R = 275;
@@ -883,5 +885,5 @@ lowerArm_L.mass = lowerArm_L.mass + hand_L.mass;
 lowerArm_R.mass = lowerArm_R.mass + hand_R.mass;
 clear hand_L hand_R;
 
-save(saveFile, 'subject', 'age', 'gender', 'origin', 'bodyHeight', 'bodyMass', 'joints', 'head', 'torso', 'upperArm_L', 'upperArm_R', 'lowerArm_L', 'lowerArm_R', 'pelvis', 'thigh_L', 'thigh_R', 'shank_L', 'shank_R', 'foot_L', 'foot_R');
+save(saveFile, 'subject', 'age', 'gender', 'origin', 'bodyHeight', 'bodyMass', 'equipmentMass', 'joints', 'head', 'torso', 'upperArm_L', 'upperArm_R', 'lowerArm_L', 'lowerArm_R', 'pelvis', 'thigh_L', 'thigh_R', 'shank_L', 'shank_R', 'foot_L', 'foot_R');
 fprintf('STATUS: Antropometric parameters were saved.\n');
