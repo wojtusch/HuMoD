@@ -2,7 +2,7 @@ function varargout = MotionGapFilling(varargin)
 
 % ------------------------------------------------------
 % This tool helps to fill gaps in motion data and transforms the
-% reference frame according to [Wu2002], [Wu2005].
+% reference frame according to [Wu1995].
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science

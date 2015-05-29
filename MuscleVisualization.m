@@ -79,13 +79,13 @@ for subjectIndex = 1:length(subjects)
             else
                 data = muscle.filteredActivities;
             end
-            for muscleIndex = 1:2:length(muscle.labels)
+            for muscleIndex = 1:2:length(muscle.muscleLabels)
                 subplot(2, 4, ceil(muscleIndex / 2));
                 plot(time, reshape(data(muscleIndex, :), [1, muscle.frames]), 'r-');
                 hold on;
                 grid on;
                 plot(time, reshape(data((muscleIndex + 1), :), [1, muscle.frames]), 'b-');
-                title([muscle.labels{muscleIndex}, '(red) / ', muscle.labels{muscleIndex + 1}, ' (blue)']);
+                title([muscle.muscleLabels{muscleIndex}, '(red) / ', muscle.muscleLabels{muscleIndex + 1}, ' (blue)']);
                 xlabel('Time in s');
 
             end

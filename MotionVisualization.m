@@ -1,5 +1,5 @@
 % ------------------------------------------------------
-% This script visualizes joint and motion data.
+% This script visualizes the processed marker and joint center coordinates.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science

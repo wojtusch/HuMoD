@@ -1,8 +1,7 @@
 % ------------------------------------------------------
-% This script estimates the joint centers from given marker positions
-% according to predictive methods given in different references. Also the
-% ground reference position and normal as well as the marker size are added
-% to the datasets.
+% This script estimates the marker coordinates shifted to skin surface and
+% the joint center positions from measured and estimated marker coordinates
+% according to predictive methods given in different references.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -178,7 +177,7 @@ for subjectIndex = 1:length(subjects)
             vectorCAL_L_m = getMarker('CAL_L', 'marker', currentFrame);
             vectorCAL_R_m = getMarker('CAL_R', 'marker', currentFrame);
 
-            % Estimate marker coordinates shifted to skin
+            % Estimate marker coordinates shifted to skin surface
             % Tragion (TRA)
             vectorTRA_R_TRA_L = vectorTRA_L_m - vectorTRA_R_m;
             directionTRA = vectorTRA_R_TRA_L / norm(vectorTRA_R_TRA_L);

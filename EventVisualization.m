@@ -67,24 +67,24 @@ for subjectIndex = 1:length(subjects)
         visualization = figure('Name', 'Events', 'NumberTitle', 'off', 'Color', 'white', 'Position', [0, 0, 1400, 600]);
         time = 0:(1 / force.frameRate):((force.frames - 1) / force.frameRate);
         subplot(3, 1, 1);
-            if isfield(force, 'groundReactionForceX_L')
-                plot(time, force.groundReactionForceX, 'Color', [0.7, 0.7, 0.7]);
+            if isfield(force, 'grfX_L')
+                plot(time, force.grfX, 'Color', [0.7, 0.7, 0.7]);
                 hold on;
-                plot(time, force.groundReactionForceX_L, 'r-');
-                plot(time, force.groundReactionForceX_R, 'b-');
+                plot(time, force.grfX_L, 'r-');
+                plot(time, force.grfX_R, 'b-');
                 title('Ground reaction force X (gray) / X_L (red) / X_R (blue)');
             else
-                plot(time, force.groundReactionForceX, 'k-');
+                plot(time, force.grfX, 'k-');
                 title('Ground reaction force X');
             end
             xlabel('Time in s');
             ylabel('Force in N');
             grid on;
-            maximumValue = max(force.groundReactionForceX);
-            minimumValue = min(force.groundReactionForceX);
+            maximumValue = max(force.grfX);
+            minimumValue = min(force.grfX);
             if ~strcmp(dataset, '6') && ~strcmp(dataset, '7')
                 for eventIndex = 1:length(events.eventStart_L)
-                    if events.groundReactionForceCorrection_L(eventIndex)
+                    if events.grfCorrection_L(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';
@@ -92,7 +92,7 @@ for subjectIndex = 1:length(subjects)
                     patch([events.eventStart_L(eventIndex), events.eventStart_L(eventIndex), events.eventEnd_L(eventIndex), events.eventEnd_L(eventIndex)], [minimumValue, maximumValue, maximumValue, minimumValue], eventColor, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
                 end
                 for eventIndex = 1:length(events.eventStart_R)
-                    if events.groundReactionForceCorrection_R(eventIndex)
+                    if events.grfCorrection_R(eventIndex)
                         eventColor = [0, 0.7, 1];
                     else
                         eventColor = 'b';
@@ -101,7 +101,7 @@ for subjectIndex = 1:length(subjects)
                 end
             else
                 for eventIndex = 1:length(events.eventStart)
-                    if events.groundReactionForceCorrection(eventIndex)
+                    if events.grfCorrection(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';
@@ -110,18 +110,18 @@ for subjectIndex = 1:length(subjects)
                 end
             end
         subplot(3, 1, 2);
-            plot(time, force.groundReactionForceY_L, 'r-');
+            plot(time, force.grfY_L, 'r-');
             hold on;
-            plot(time, force.groundReactionForceY_R, 'b-');
+            plot(time, force.grfY_R, 'b-');
             title('Ground reaction force Y_L (red) / Y_R (blue)');
             xlabel('Time in s');
             ylabel('Force in N');
             grid on;
-            maximumValue = max(max(force.groundReactionForceY_L), max(force.groundReactionForceY_R));
-            minimumValue = min(min(force.groundReactionForceY_L), min(force.groundReactionForceY_R));
+            maximumValue = max(max(force.grfY_L), max(force.grfY_R));
+            minimumValue = min(min(force.grfY_L), min(force.grfY_R));
             if ~strcmp(dataset, '6') && ~strcmp(dataset, '7')
                 for eventIndex = 1:length(events.eventStart_L)
-                    if events.groundReactionForceCorrection_L(eventIndex)
+                    if events.grfCorrection_L(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';
@@ -129,7 +129,7 @@ for subjectIndex = 1:length(subjects)
                     patch([events.eventStart_L(eventIndex), events.eventStart_L(eventIndex), events.eventEnd_L(eventIndex), events.eventEnd_L(eventIndex)], [minimumValue, maximumValue, maximumValue, minimumValue], eventColor, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
                 end
                 for eventIndex = 1:length(events.eventStart_R)
-                    if events.groundReactionForceCorrection_R(eventIndex)
+                    if events.grfCorrection_R(eventIndex)
                         eventColor = [0, 0.7, 1];
                     else
                         eventColor = 'b';
@@ -138,7 +138,7 @@ for subjectIndex = 1:length(subjects)
                 end
             else
                 for eventIndex = 1:length(events.eventStart)
-                    if events.groundReactionForceCorrection(eventIndex)
+                    if events.grfCorrection(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';
@@ -147,24 +147,24 @@ for subjectIndex = 1:length(subjects)
                 end
             end
         subplot(3, 1, 3);
-            if isfield(force, 'groundReactionForceZ_L')
-                plot(time, force.groundReactionForceZ, 'Color', [0.7, 0.7, 0.7]);
+            if isfield(force, 'grfZ_L')
+                plot(time, force.grfZ, 'Color', [0.7, 0.7, 0.7]);
                 hold on;
-                plot(time, force.groundReactionForceZ_L, 'r-');
-                plot(time, force.groundReactionForceZ_R, 'b-');
+                plot(time, force.grfZ_L, 'r-');
+                plot(time, force.grfZ_R, 'b-');
                 title('Ground reaction force Z (gray) / Z_L (red) / Z_R (blue)');
             else
-                plot(time, force.groundReactionForceZ, 'k-');
+                plot(time, force.grfZ, 'k-');
                 title('Ground reaction force Z');
             end
             xlabel('Time in s');
             ylabel('Force in N');
             grid on;
-            maximumValue = max(force.groundReactionForceZ);
-            minimumValue = min(force.groundReactionForceZ);
+            maximumValue = max(force.grfZ);
+            minimumValue = min(force.grfZ);
             if ~strcmp(dataset, '6') && ~strcmp(dataset, '7')
                 for eventIndex = 1:length(events.eventStart_L)
-                    if events.groundReactionForceCorrection_L(eventIndex)
+                    if events.grfCorrection_L(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';
@@ -172,7 +172,7 @@ for subjectIndex = 1:length(subjects)
                     patch([events.eventStart_L(eventIndex), events.eventStart_L(eventIndex), events.eventEnd_L(eventIndex), events.eventEnd_L(eventIndex)], [minimumValue, maximumValue, maximumValue, minimumValue], eventColor, 'EdgeColor', 'none', 'FaceAlpha', 0.3);
                 end
                 for eventIndex = 1:length(events.eventStart_R)
-                    if events.groundReactionForceCorrection_R(eventIndex)
+                    if events.grfCorrection_R(eventIndex)
                         eventColor = [0, 0.7, 1];
                     else
                         eventColor = 'b';
@@ -181,7 +181,7 @@ for subjectIndex = 1:length(subjects)
                 end
             else
                 for eventIndex = 1:length(events.eventStart)
-                    if events.groundReactionForceCorrection(eventIndex)
+                    if events.grfCorrection(eventIndex)
                         eventColor = [1, 0.7, 0];
                     else
                         eventColor = 'r';

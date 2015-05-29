@@ -93,37 +93,5 @@ for subjectIndex = 1:length(subjects)
         end
         save(processedFile, '-struct', 'processedVariables');
         
-        % Load raw data files
-        rawForceFile = [strjoin(datasetPath(1:(end - 1)), filesep), filesep, 'Raw data', filesep, 'Force ', datasetPath{end}];
-        rawMotionFile = [strjoin(datasetPath(1:(end - 1)), filesep), filesep, 'Raw data', filesep, 'Motion ', datasetPath{end}];
-        rawMuscleFile = [strjoin(datasetPath(1:(end - 1)), filesep), filesep, 'Raw data', filesep, 'Muscle ', datasetPath{end}];
-        if exist(rawForceFile, 'file')
-            rawForceVariables = load(rawForceFile);
-        else
-            fprintf('WARNING: No matching raw force data file found!\n');
-            continue;
-        end
-        if exist(rawMotionFile, 'file')
-            rawMotionVariables = load(rawMotionFile);
-        else
-            fprintf('WARNING: No matching raw motion data file found!\n');
-            continue;
-        end
-        if exist(rawMuscleFile, 'file')
-            rawMuscleVariables = load(rawMuscleFile);
-        else
-            fprintf('WARNING: No matching raw muscle data file found!\n');
-            continue;
-        end
-        
-        % Save meta data in raw data
-        fprintf('STATUS: Saving raw data of dataset %s %s.\n', subjects{subjectIndex}, datasets{datasetIndex});
-        rawForceVariables.meta = processedVariables.meta;
-        rawMotionVariables.meta = processedVariables.meta;
-        rawMuscleVariables.meta = processedVariables.meta;
-        save(rawForceFile, '-struct', 'rawForceVariables');
-        save(rawMotionFile, '-struct', 'rawMotionVariables');
-        save(rawMuscleFile, '-struct', 'rawMuscleVariables');
-        
     end
 end

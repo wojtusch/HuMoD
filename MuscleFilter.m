@@ -1,5 +1,5 @@
 % ------------------------------------------------------
-% This script processes the raw muscle data. During the measuremet, the
+% This script processes the raw muscle data. During the measurement, the
 % signals were filtered to a bandwidth between 20 Hz and 450 Hz and were
 % checked for excessive amounts of line interference as well as channel
 % clipping due to over-amplified signals. This script rectifies the signals
@@ -190,7 +190,7 @@ for subjectIndex = 1:length(subjects)
         fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
         muscle.frameRate = frameRate;
         muscle.frames = frames;
-        muscle.labels = muscleList;
+        muscle.muscleLabels = muscleList;
         muscle.filterAlgorithm = filterAlgorithm;
         muscle.filteredActivities = processedData;
         if exist(saveFile, 'file') == 2

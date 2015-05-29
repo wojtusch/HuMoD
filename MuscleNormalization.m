@@ -1,6 +1,6 @@
 % ------------------------------------------------------
-% This script normalizes the processed the muscle data with the global
-% maximum value for each muscle and filter method.
+% This script normalizes the filtered muscle data by finding the global
+% maximum values in all datasets and correcting outliers.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -75,7 +75,7 @@ for subjectIndex = 1:length(subjects)
     if plotNormalization
         visualization = figure('Name', 'Muscle normalization', 'NumberTitle', 'off', 'Color', 'white', 'Position', [0, 0, 1400, 600]);
         time = 0:(1 / muscle.frameRate):((length(aggregatedActivities) - 1) / muscle.frameRate);
-        for muscleIndex = 1:2:length(muscle.labels)
+        for muscleIndex = 1:2:length(muscle.muscleLabels)
             subplot(2, 4, ceil(muscleIndex / 2));
             plot(time, aggregatedActivities(muscleIndex, :), 'r-');
             hold on;
@@ -83,7 +83,7 @@ for subjectIndex = 1:length(subjects)
             plot([time(1), time(end)], [maximumValues(muscleIndex), maximumValues(muscleIndex)], 'r--');
             plot(time, aggregatedActivities((muscleIndex + 1), :), 'b-');
             plot([time(1), time(end)], [maximumValues(muscleIndex + 1), maximumValues(muscleIndex + 1)], 'b--');
-            title([muscle.labels{muscleIndex}, '(red) / ', muscle.labels{muscleIndex + 1}, ' (blue)']);
+            title([muscle.muscleLabels{muscleIndex}, '(red) / ', muscle.muscleLabels{muscleIndex + 1}, ' (blue)']);
             xlabel('Time in s');
 
         end
@@ -114,7 +114,7 @@ for subjectIndex = 1:length(subjects)
 
         % Normalize the post processed the muscle data
         muscle.normalizedActivities = zeros(size(muscle.filteredActivities));
-        for muscleIndex = 1:length(muscle.labels);
+        for muscleIndex = 1:length(muscle.muscleLabels);
             muscle.normalizedActivities(muscleIndex, :) = muscle.filteredActivities(muscleIndex, :) / maximumValues(muscleIndex);
         end    
         muscle.maximumValues = maximumValues;

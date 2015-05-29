@@ -1,6 +1,7 @@
 % ------------------------------------------------------
-% This script estimates the center of pressure position from the measured
-% force sensor data.
+% This script estimates the center of pressure positions from the processed
+% ground reaction forces, measured force sensor data and given force sensor
+% positions.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -104,8 +105,8 @@ for subjectIndex = 1:length(subjects)
         end
         if ~strcmp(dataset, '6') && ~strcmp(dataset, '7') && ~strcmp(dataset, '8')
             minimumForce = 0.1;
-            FY_L = force.groundReactionForceY_L;
-            FY_R = force.groundReactionForceY_R;
+            FY_L = force.grfY_L;
+            FY_R = force.grfY_R;
             TX_L = nan(1, force.frames);
             TX_R = nan(1, force.frames);
             TZ_L = nan(1, force.frames);
@@ -117,7 +118,7 @@ for subjectIndex = 1:length(subjects)
             singleSupport_L = logical(bitand(events.contactPhase_L, ~events.contactPhase_R));
             singleSupport_R = logical(bitand(~events.contactPhase_L, events.contactPhase_R));
             for eventIndex = 1:length(events.eventStart_L)
-                if ~events.groundReactionForceCorrection_L(eventIndex)
+                if ~events.grfCorrection_L(eventIndex)
                     eventStart = round(events.eventStart_L(eventIndex) * force.frameRate);
                     eventEnd = round(events.eventEnd_L(eventIndex) * force.frameRate);
                     TX_L(eventStart:eventEnd) = (FY_L1(eventStart:eventEnd) * vectorL1(3) + FY_L2(eventStart:eventEnd) * vectorL2(3) + FY_L3(eventStart:eventEnd) * vectorL3(3) + FY_L4(eventStart:eventEnd) * vectorL4(3)) / 1000;
@@ -141,7 +142,7 @@ for subjectIndex = 1:length(subjects)
                 end
             end
             for eventIndex = 1:length(events.eventStart_R)
-                if ~events.groundReactionForceCorrection_R(eventIndex)
+                if ~events.grfCorrection_R(eventIndex)
                     eventStart = round(events.eventStart_R(eventIndex) * force.frameRate);
                     eventEnd = round(events.eventEnd_R(eventIndex) * force.frameRate);
                     TX_R(eventStart:eventEnd) = (FY_R1(eventStart:eventEnd) * vectorR1(3) + FY_R2(eventStart:eventEnd) * vectorR2(3) + FY_R3(eventStart:eventEnd) * vectorR3(3) + FY_R4(eventStart:eventEnd) * vectorR4(3)) / 1000;
@@ -165,8 +166,8 @@ for subjectIndex = 1:length(subjects)
                 end
             end
         else
-            FY_L = force.groundReactionForceY_L;
-            FY_R = force.groundReactionForceY_R;
+            FY_L = force.grfY_L;
+            FY_R = force.grfY_R;
             TX = nan(1, force.frames);
             TZ = nan(1, force.frames);
             COPX = nan(1, force.frames);
@@ -283,7 +284,7 @@ for subjectIndex = 1:length(subjects)
             regressionRatio2 = 0.1;
             velocityLimit = 500;
             for eventIndex = 1:length(events.eventStart_L)
-                if ~events.groundReactionForceCorrection_L(eventIndex)
+                if ~events.grfCorrection_L(eventIndex)
                     forceEventStart = round(events.eventStart_L(eventIndex) * force.frameRate);
                     forceEventEnd = round(events.eventEnd_L(eventIndex) * force.frameRate);
                     velocityX = savitzkyGolayFilter(COPX_L(forceEventStart:forceEventEnd), '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
@@ -331,7 +332,7 @@ for subjectIndex = 1:length(subjects)
                 end
             end
             for eventIndex = 1:length(events.eventStart_R)
-                if ~events.groundReactionForceCorrection_R(eventIndex)
+                if ~events.grfCorrection_R(eventIndex)
                     forceEventStart = round(events.eventStart_R(eventIndex) * force.frameRate);
                     forceEventEnd = round(events.eventEnd_R(eventIndex) * force.frameRate);
                     velocityX = savitzkyGolayFilter(COPX_R(forceEventStart:forceEventEnd), '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
@@ -388,7 +389,7 @@ for subjectIndex = 1:length(subjects)
             doubleSupport_L = logical(bitand(events.contactPhase_L, events.contactPhase_R));
             doubleSupport_R = logical(bitand(events.contactPhase_L, events.contactPhase_R));
             for eventIndex = 1:length(events.eventStart_L)
-                if events.groundReactionForceCorrection_L(eventIndex)
+                if events.grfCorrection_L(eventIndex)
                     forceEventStart = round(events.eventStart_L(eventIndex) * force.frameRate);
                     forceEventEnd = round(events.eventEnd_L(eventIndex) * force.frameRate);
                     if any(doubleSupport_L(forceEventStart:forceEventEnd))
@@ -440,7 +441,7 @@ for subjectIndex = 1:length(subjects)
                 end
             end
             for eventIndex = 1:length(events.eventStart_R)
-                if events.groundReactionForceCorrection_R(eventIndex)
+                if events.grfCorrection_R(eventIndex)
                     forceEventStart = round(events.eventStart_R(eventIndex) * force.frameRate);
                     forceEventEnd = round(events.eventEnd_R(eventIndex) * force.frameRate);
                     if any(doubleSupport_R(forceEventStart:forceEventEnd))
@@ -538,19 +539,19 @@ for subjectIndex = 1:length(subjects)
         % Save processed data
         fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
         if ~strcmp(dataset, '6') && ~strcmp(dataset, '7') && ~strcmp(dataset, '8')
-            force.centerOfPressureX_L = COPX_L;
-            force.centerOfPressureX_R = COPX_R;
-            force.centerOfPressureY_L = COPY_L;
-            force.centerOfPressureY_R = COPY_R;
-            force.centerOfPressureZ_L = COPZ_L;
-            force.centerOfPressureZ_R = COPZ_R;
-            events.centerOfPressureCorrection_L = correction_L;
-            events.centerOfPressureCorrection_R = correction_R;
+            force.copX_L = COPX_L;
+            force.copX_R = COPX_R;
+            force.copY_L = COPY_L;
+            force.copY_R = COPY_R;
+            force.copZ_L = COPZ_L;
+            force.copZ_R = COPZ_R;
+            events.copCorrection_L = correction_L;
+            events.copCorrection_R = correction_R;
         else
-            force.centerOfPressureX = COPX;
-            force.centerOfPressureY = COPY;
-            force.centerOfPressureZ = COPZ;
-            events.centerOfPressureCorrection = correction;
+            force.copX = COPX;
+            force.copY = COPY;
+            force.copZ = COPZ;
+            events.copCorrection = correction;
         end
         variables.force = force;
         variables.events = events;

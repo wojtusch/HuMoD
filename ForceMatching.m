@@ -1,5 +1,6 @@
 % ------------------------------------------------------
-% This script matches the ground reaction forces for left and right side.
+% This script matches the ground reaction forces for left and right side by
+% shifting residual forces during single support.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -78,29 +79,29 @@ for subjectIndex = 1:length(subjects)
             end
 
             % Match ground reaction forces
-            groundReactionForceY_L = force.groundReactionForceY_L;
-            groundReactionForceY_R = force.groundReactionForceY_R;
-            lowerLimit = min(50, 3 * max(groundReactionForceY_L([1000:8000, (force.frames - 7999):(force.frames - 999)])));
+            grfY_L = force.grfY_L;
+            grfY_R = force.grfY_R;
+            lowerLimit = min(50, 3 * max(grfY_L([1000:8000, (force.frames - 7999):(force.frames - 999)])));
             for eventIndex = 1:length(events.eventStart_L)
                 singleSupport_L = logical(bitand(contactPhase_L, ~contactPhase_R));
-                if events.groundReactionForceCorrection_L(eventIndex) || (median(groundReactionForceY_R(singleSupport_L)) > lowerLimit)
-                    groundReactionForceY_L(singleSupport_L) = groundReactionForceY_L(singleSupport_L) + groundReactionForceY_R(singleSupport_L);
-                    groundReactionForceY_R(singleSupport_L) = 0;
+                if events.grfCorrection_L(eventIndex) || (median(grfY_R(singleSupport_L)) > lowerLimit)
+                    grfY_L(singleSupport_L) = grfY_L(singleSupport_L) + grfY_R(singleSupport_L);
+                    grfY_R(singleSupport_L) = 0;
                 end
             end
-            lowerLimit = min(50, 3 * max(groundReactionForceY_R([1000:8000, (force.frames - 7999):(force.frames - 999)])));
+            lowerLimit = min(50, 3 * max(grfY_R([1000:8000, (force.frames - 7999):(force.frames - 999)])));
             for eventIndex = 1:length(events.eventStart_R)
                 singleSupport_R = logical(bitand(contactPhase_R, ~contactPhase_L));
-                if events.groundReactionForceCorrection_R(eventIndex) || (median(groundReactionForceY_L(singleSupport_R)) > lowerLimit)
-                    groundReactionForceY_R(singleSupport_R) = groundReactionForceY_L(singleSupport_R) + groundReactionForceY_R(singleSupport_R);
-                    groundReactionForceY_L(singleSupport_R) = 0;
+                if events.grfCorrection_R(eventIndex) || (median(grfY_L(singleSupport_R)) > lowerLimit)
+                    grfY_R(singleSupport_R) = grfY_L(singleSupport_R) + grfY_R(singleSupport_R);
+                    grfY_L(singleSupport_R) = 0;
                 end
             end
 
             % Save processed data
             fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
-            force.groundReactionForceY_L = groundReactionForceY_L;
-            force.groundReactionForceY_R = groundReactionForceY_R;
+            force.grfY_L = grfY_L;
+            force.grfY_R = grfY_R;
             events.contactPhase_L = contactPhase_L;
             events.contactPhase_R = contactPhase_R;
             variables.force = force;

@@ -1,6 +1,7 @@
 % ------------------------------------------------------
-% This script smoothes the measured ground reaction forces and separates
-% the forces for left and right side.
+% This script smooths the measured ground reaction forces and separates the
+% forces for left and right side. For the separation of the forces during
+% double support, the method given by [Villeger2014] is used.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -95,26 +96,26 @@ for subjectIndex = 1:length(subjects)
         
         % Separate forces for left and right side
         if ~strcmp(dataset, '6') && ~strcmp(dataset, '7') && ~strcmp(dataset, '8')
-            FX = force.groundReactionForceX;
-            FY_L = force.groundReactionForceY_L;
-            FY_R = force.groundReactionForceY_R;
-            FZ = force.groundReactionForceZ;
+            FX = force.grfX;
+            FY_L = force.grfY_L;
+            FY_R = force.grfY_R;
+            FZ = force.grfZ;
 
             % Separate forces during single support phase
-            groundReactionForceX_L = zeros(1, force.frames);
-            groundReactionForceX_R = zeros(1, force.frames);
-            groundReactionForceY_L = zeros(1, force.frames);
-            groundReactionForceY_R = zeros(1, force.frames);
-            groundReactionForceZ_L = zeros(1, force.frames);
-            groundReactionForceZ_R = zeros(1, force.frames);
+            grfX_L = zeros(1, force.frames);
+            grfX_R = zeros(1, force.frames);
+            grfY_L = zeros(1, force.frames);
+            grfY_R = zeros(1, force.frames);
+            grfZ_L = zeros(1, force.frames);
+            grfZ_R = zeros(1, force.frames);
             singleSupport_L = logical(bitand(events.contactPhase_L, ~events.contactPhase_R));
-            groundReactionForceX_L(singleSupport_L) = FX(singleSupport_L);
-            groundReactionForceY_L(singleSupport_L) = FY_L(singleSupport_L);
-            groundReactionForceZ_L(singleSupport_L) = FZ(singleSupport_L);
+            grfX_L(singleSupport_L) = FX(singleSupport_L);
+            grfY_L(singleSupport_L) = FY_L(singleSupport_L);
+            grfZ_L(singleSupport_L) = FZ(singleSupport_L);
             singleSupport_R = logical(bitand(~events.contactPhase_L, events.contactPhase_R));
-            groundReactionForceX_R(singleSupport_R) = FX(singleSupport_R);
-            groundReactionForceY_R(singleSupport_R) = FY_R(singleSupport_R);
-            groundReactionForceZ_R(singleSupport_R) = FZ(singleSupport_R);
+            grfX_R(singleSupport_R) = FX(singleSupport_R);
+            grfY_R(singleSupport_R) = FY_R(singleSupport_R);
+            grfZ_R(singleSupport_R) = FZ(singleSupport_R);
 
             % Separate forces during double support phase according to [Villeger2014]
             doubleSupport = logical(bitand(events.contactPhase_L, events.contactPhase_R));
@@ -123,10 +124,10 @@ for subjectIndex = 1:length(subjects)
                 doubleSupportStart = find(difference > 0);
                 doubleSupportEnd = find(difference < 0) - 1;
                 doubleSupportDuration = doubleSupportEnd - doubleSupportStart + 1;
-                dFX_dt = savitzkyGolayFilter(force.groundReactionForceX, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
-                dFY_L_dt = savitzkyGolayFilter(force.groundReactionForceY_L, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
-                dFY_R_dt = savitzkyGolayFilter(force.groundReactionForceY_R, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
-                dFZ_dt = savitzkyGolayFilter(force.groundReactionForceZ, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
+                dFX_dt = savitzkyGolayFilter(force.grfX, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
+                dFY_L_dt = savitzkyGolayFilter(force.grfY_L, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
+                dFY_R_dt = savitzkyGolayFilter(force.grfY_R, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
+                dFZ_dt = savitzkyGolayFilter(force.grfZ, '1st derivative', firstDerivativeWindowSize, (1 / force.frameRate));
                 for doubleSupportIndex = 1:length(doubleSupportStart)
                     % Find involved events and force vectors
                     eventIndex_L = find(bitand((events.eventStart_L <= (doubleSupportEnd(doubleSupportIndex) / force.frameRate)), (events.eventEnd_L >= (doubleSupportStart(doubleSupportIndex) / force.frameRate))));
@@ -174,13 +175,13 @@ for subjectIndex = 1:length(subjects)
                     % Estimate forces during double support phase
                     FX21 = FX1(end) * (exp(SX^2) * exp(-((t - (SX * T_ds)) / T_ds).^2) - (0.5 * exp(SX^2) * exp(-(2 - SX)^2)) * t / T_ds);
                     FX22 = FX(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) - FX21;
-                    if events.groundReactionForceCorrection_L(eventIndex_L) || events.groundReactionForceCorrection_R(eventIndex_R)
+                    if events.grfCorrection_L(eventIndex_L) || events.grfCorrection_R(eventIndex_R)
                         FY21 = FY1(end) * (exp(SY^2) * exp(-((t - (SY * T_ds)) / T_ds).^2) - (0.5 * exp(SY^2) * exp(-(2 - SY)^2)) * t / T_ds);
                         FY22 = (FY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) + FY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex))) - FY21;
                     else
                         if events.eventStart_L(eventIndex_L) < events.eventStart_R(eventIndex_R)
-                            FY21 = force.groundReactionForceY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
-                            FY22 = force.groundReactionForceY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
+                            FY21 = force.grfY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
+                            FY22 = force.grfY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
                         else
                             FY21 = FY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
                             FY22 = FY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex));
@@ -191,72 +192,72 @@ for subjectIndex = 1:length(subjects)
                     
                     % Combine measured during single support phase and estimated forces during double support phase
                     if events.eventStart_L(eventIndex_L) < events.eventStart_R(eventIndex_R)
-                        groundReactionForceX_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX21;
-                        groundReactionForceX_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX22;
-                        groundReactionForceY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY21;
-                        groundReactionForceY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY22;
-                        groundReactionForceZ_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ21;
-                        groundReactionForceZ_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ22;
+                        grfX_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX21;
+                        grfX_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX22;
+                        grfY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY21;
+                        grfY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY22;
+                        grfZ_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ21;
+                        grfZ_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ22;
                     else
-                        groundReactionForceX_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX21;
-                        groundReactionForceX_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX22;
-                        groundReactionForceY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY21;
-                        groundReactionForceY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY22;
-                        groundReactionForceZ_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ21;
-                        groundReactionForceZ_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ22;
+                        grfX_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX21;
+                        grfX_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FX22;
+                        grfY_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY21;
+                        grfY_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FY22;
+                        grfZ_R(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ21;
+                        grfZ_L(doubleSupportStart(doubleSupportIndex):doubleSupportEnd(doubleSupportIndex)) = FZ22;
                     end
                 end
             end
-            force.groundReactionForceX = FX;
-            force.groundReactionForceX_L = groundReactionForceX_L;
-            force.groundReactionForceX_R = groundReactionForceX_R;
-            force.groundReactionForceY_L = (groundReactionForceY_L + abs(groundReactionForceY_L)) / 2;
-            force.groundReactionForceY_R = (groundReactionForceY_R + abs(groundReactionForceY_R)) / 2;
-            force.groundReactionForceZ = FZ;
-            force.groundReactionForceZ_L = groundReactionForceZ_L;
-            force.groundReactionForceZ_R = groundReactionForceZ_R;
+            force.grfX = FX;
+            force.grfX_L = grfX_L;
+            force.grfX_R = grfX_R;
+            force.grfY_L = (grfY_L + abs(grfY_L)) / 2;
+            force.grfY_R = (grfY_R + abs(grfY_R)) / 2;
+            force.grfZ = FZ;
+            force.grfZ_L = grfZ_L;
+            force.grfZ_R = grfZ_R;
         elseif strcmp(dataset, '7')
-            FX = force.groundReactionForceX;
-            FY_L = force.groundReactionForceY_L;
-            FY_R = force.groundReactionForceY_R;
-            FZ = force.groundReactionForceZ;
+            FX = force.grfX;
+            FY_L = force.grfY_L;
+            FY_R = force.grfY_R;
+            FZ = force.grfZ;
             
             % Separate forces during kicking event
-            groundReactionForceX_L = nan(1, force.frames);
-            groundReactionForceX_R = nan(1, force.frames);
-            groundReactionForceY_L = FY_L;
-            groundReactionForceY_R = FY_R;
-            groundReactionForceZ_L = nan(1, force.frames);
-            groundReactionForceZ_R = nan(1, force.frames);
+            grfX_L = nan(1, force.frames);
+            grfX_R = nan(1, force.frames);
+            grfY_L = FY_L;
+            grfY_R = FY_R;
+            grfZ_L = nan(1, force.frames);
+            grfZ_R = nan(1, force.frames);
             for eventIndex = 1:length(events.eventStart)
                 eventStart = round(events.eventStart(eventIndex) * force.frameRate);
                 eventEnd = round(events.eventEnd(eventIndex) * force.frameRate);
                 vectorLM_L = getAverageMarker('LM_L', 'surface', round(eventStart * motion.frameRate / force.frameRate), round(eventEnd * motion.frameRate / force.frameRate));
                 vectorLM_R = getAverageMarker('LM_R', 'surface', round(eventStart * motion.frameRate / force.frameRate), round(eventEnd * motion.frameRate / force.frameRate));
                 if vectorLM_L(2) < vectorLM_R(2)
-                    groundReactionForceX_L(eventStart:eventEnd) = FX(eventStart:eventEnd);
-                    groundReactionForceX_R(eventStart:eventEnd) = 0;
-                    groundReactionForceY_L(eventStart:eventEnd) = FY_L(eventStart:eventEnd) + FY_R(eventStart:eventEnd);
-                    groundReactionForceY_R(eventStart:eventEnd) = 0;
-                    groundReactionForceZ_L(eventStart:eventEnd) = FZ(eventStart:eventEnd);
-                    groundReactionForceZ_R(eventStart:eventEnd) = 0;
+                    grfX_L(eventStart:eventEnd) = FX(eventStart:eventEnd);
+                    grfX_R(eventStart:eventEnd) = 0;
+                    grfY_L(eventStart:eventEnd) = FY_L(eventStart:eventEnd) + FY_R(eventStart:eventEnd);
+                    grfY_R(eventStart:eventEnd) = 0;
+                    grfZ_L(eventStart:eventEnd) = FZ(eventStart:eventEnd);
+                    grfZ_R(eventStart:eventEnd) = 0;
                 else
-                    groundReactionForceX_L(eventStart:eventEnd) = 0;
-                    groundReactionForceX_R(eventStart:eventEnd) = FX(eventStart:eventEnd);
-                    groundReactionForceY_L(eventStart:eventEnd) = 0;
-                    groundReactionForceY_R(eventStart:eventEnd) = FY_L(eventStart:eventEnd) + FY_R(eventStart:eventEnd);
-                    groundReactionForceZ_L(eventStart:eventEnd) = 0;
-                    groundReactionForceZ_R(eventStart:eventEnd) = FZ(eventStart:eventEnd);
+                    grfX_L(eventStart:eventEnd) = 0;
+                    grfX_R(eventStart:eventEnd) = FX(eventStart:eventEnd);
+                    grfY_L(eventStart:eventEnd) = 0;
+                    grfY_R(eventStart:eventEnd) = FY_L(eventStart:eventEnd) + FY_R(eventStart:eventEnd);
+                    grfZ_L(eventStart:eventEnd) = 0;
+                    grfZ_R(eventStart:eventEnd) = FZ(eventStart:eventEnd);
                 end
             end
-            force.groundReactionForceX = FX;
-            force.groundReactionForceX_L = groundReactionForceX_L;
-            force.groundReactionForceX_R = groundReactionForceX_R;
-            force.groundReactionForceY_L = (groundReactionForceY_L + abs(groundReactionForceY_L)) / 2;
-            force.groundReactionForceY_R = (groundReactionForceY_R + abs(groundReactionForceY_R)) / 2;
-            force.groundReactionForceZ = FZ;
-            force.groundReactionForceZ_L = groundReactionForceZ_L;
-            force.groundReactionForceZ_R = groundReactionForceZ_R;
+            force.grfX = FX;
+            force.grfX_L = grfX_L;
+            force.grfX_R = grfX_R;
+            force.grfY_L = (grfY_L + abs(grfY_L)) / 2;
+            force.grfY_R = (grfY_R + abs(grfY_R)) / 2;
+            force.grfZ = FZ;
+            force.grfZ_L = grfZ_L;
+            force.grfZ_R = grfZ_R;
         end
         
         % Save processed data

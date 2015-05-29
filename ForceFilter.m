@@ -1,8 +1,7 @@
 % ------------------------------------------------------
 % This script processes the raw force data and transforms the coordinate
-% system according to [Wu2002], [Wu2005]. Also motion and force data is
-% synchronized by compensating the time delay between motion and force
-% measurements.
+% system according to [Wu1995]. Also motion and force data is synchronized
+% by compensating the time delay between motion and force measurements.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -154,20 +153,20 @@ for subjectIndex = 1:length(subjects)
         force.frameRate = frameRate;
         force.frames = frames;
         force.treadmillVelocity = variables.vBden;
-        force.groundReactionForceX = Fx;
+        force.grfX = Fx;
         force.forceSensorX1 = Fx1;
         force.forceSensorX2 = Fx2;
-        force.groundReactionForceY_L = Fy_L;
+        force.grfY_L = Fy_L;
         force.forceSensorY_L1 = Fy_L1;
         force.forceSensorY_L2 = Fy_L2;
         force.forceSensorY_L3 = Fy_L3;
         force.forceSensorY_L4 = Fy_L4;
-        force.groundReactionForceY_R = Fy_R;
+        force.grfY_R = Fy_R;
         force.forceSensorY_R1 = Fy_R1;
         force.forceSensorY_R2 = Fy_R2;
         force.forceSensorY_R3 = Fy_R3;
         force.forceSensorY_R4 = Fy_R4;
-        force.groundReactionForceZ = Fz;
+        force.grfZ = Fz;
         force.forceSensorZ1 = Fz1;
         force.forceSensorZ2 = Fz2;
         if exist(saveFile, 'file') == 2
