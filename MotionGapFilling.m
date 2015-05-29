@@ -832,11 +832,8 @@ if handles.dataLoaded
         % Save modified data to new file and adjust reference frame
         % according to [Wu2002], [Wu2005] (x -> z, y -> x, z -> y)
         [path, file, extention] = fileparts(dataFile);
-        file = regexp(file, ' ', 'split');
-        file = file(2:end);
-        file(2, :) = {' '};
+        file = regexp(file, '.+?(?=-)', 'match');
         file = [file{:}];
-        file = file(1:(end - 1));
         saveFile = [path, filesep, '..', filesep, file, extention];
         motion.frameRate = handles.frameRate;
         motion.frames = handles.frames;

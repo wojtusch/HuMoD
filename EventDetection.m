@@ -122,9 +122,9 @@ function handles = detectEvents(handles)
 if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
     for sideIndex = 1:2
         if sideIndex == 1
-            forceY = handles.force.groundReactionForceY_L;
+            forceY = handles.force.grfY_L;
         else
-            forceY = handles.force.groundReactionForceY_R;
+            forceY = handles.force.grfY_R;
         end
         handles.lowerLimit = max(handles.minimumLowerLimit, min(handles.maximumLowerLimit, 3 * max(forceY([1000:8000, (handles.force.frames - 7999):(handles.force.frames - 999)]))));
         handles.upperLimit = handles.initialUpperLimit;
@@ -229,7 +229,7 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
             for dataIndex = 1:length(eventStart)
                 handles.events.contactPhase_L(eventStart(dataIndex):eventEnd(dataIndex)) = 1;
             end
-            handles.events.groundReactionForceCorrection_L = zeros(1, length(eventStart));
+            handles.events.grfCorrection_L = zeros(1, length(eventStart));
         else
             handles.events.eventStart_R = eventStart;
             handles.events.eventEnd_R = eventEnd;
@@ -237,7 +237,7 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
             for dataIndex = 1:length(eventStart)
                 handles.events.contactPhase_R(eventStart(dataIndex):eventEnd(dataIndex)) = 1;
             end
-            handles.events.groundReactionForceCorrection_R = zeros(1, length(eventStart));
+            handles.events.grfCorrection_R = zeros(1, length(eventStart));
         end
     end
 
@@ -266,16 +266,16 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
                     handles.events.contactPhase_R(indices) = 0;
                     handles.events.eventStart_R(dataIndex2) = [];
                     handles.events.eventEnd_R(dataIndex2) = [];
-                    handles.events.groundReactionForceCorrection_R(dataIndex2) = [];
-                    handles.events.groundReactionForceCorrection_L(dataIndex2) = 1;
+                    handles.events.grfCorrection_R(dataIndex2) = [];
+                    handles.events.grfCorrection_L(dataIndex2) = 1;
                 elseif ~isempty(minimumDistance_L) && ~isempty(minimumDistance_R)
                     dataIndex2 = find(handles.events.eventStart_L >= startIndex(dataIndex1), 1);
                     indices = handles.events.eventStart_L(dataIndex2):handles.events.eventEnd_L(dataIndex2);
                     handles.events.contactPhase_L(indices) = 0;
                     handles.events.eventStart_L(dataIndex2) = [];
                     handles.events.eventEnd_L(dataIndex2) = [];
-                    handles.events.groundReactionForceCorrection_L(dataIndex2) = [];
-                    handles.events.groundReactionForceCorrection_R(dataIndex2) = 1;
+                    handles.events.grfCorrection_L(dataIndex2) = [];
+                    handles.events.grfCorrection_R(dataIndex2) = 1;
                 end
             end
         end
@@ -287,7 +287,7 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
         dataLength = length(handles.events.eventStart_L);
         while dataIndex <= dataLength
             indices = logical([zeros(1, handles.events.eventStart_L(dataIndex) - 1), bitand(handles.events.contactPhase_L(handles.events.eventStart_L(dataIndex):handles.events.eventEnd_L(dataIndex)), ~handles.events.contactPhase_R(handles.events.eventStart_L(dataIndex):handles.events.eventEnd_L(dataIndex)))]);
-            if median(handles.force.groundReactionForceY_R(indices)) > handles.lowerLimit
+            if median(handles.force.grfY_R(indices)) > handles.lowerLimit
                 % Find the previous contact event start and decide about side
                 distances_L = sort(handles.events.eventStart_L(dataIndex) - handles.events.eventStart_L);
                 distances_R = sort(handles.events.eventStart_L(dataIndex) - handles.events.eventStart_R);
@@ -306,8 +306,8 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
                     handles.events.eventEnd_R = sort([handles.events.eventEnd_R, handles.events.eventEnd_L(dataIndex)]);
                     handles.events.eventStart_L(dataIndex) = [];
                     handles.events.eventEnd_L(dataIndex) = [];
-                    handles.events.groundReactionForceCorrection_R = [handles.events.groundReactionForceCorrection_R(1:(dataIndex - 1)), 1 , handles.events.groundReactionForceCorrection_R(dataIndex:end)];
-                    handles.events.groundReactionForceCorrection_L(dataIndex) = [];
+                    handles.events.grfCorrection_R = [handles.events.grfCorrection_R(1:(dataIndex - 1)), 1 , handles.events.grfCorrection_R(dataIndex:end)];
+                    handles.events.grfCorrection_L(dataIndex) = [];
                     dataLength = dataLength - 1;
                 end
             end
@@ -317,7 +317,7 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
         dataLength = length(handles.events.eventStart_R);
         while dataIndex <= dataLength
             indices = logical([zeros(1, handles.events.eventStart_R(dataIndex) - 1), bitand(handles.events.contactPhase_R(handles.events.eventStart_R(dataIndex):handles.events.eventEnd_R(dataIndex)), ~handles.events.contactPhase_L(handles.events.eventStart_R(dataIndex):handles.events.eventEnd_R(dataIndex)))]);
-            if median(handles.force.groundReactionForceY_L(indices)) > handles.lowerLimit
+            if median(handles.force.grfY_L(indices)) > handles.lowerLimit
                 % Find the previous contact event start and decide about side
                 distances_L = sort(handles.events.eventStart_R(dataIndex) - handles.events.eventStart_L);
                 distances_R = sort(handles.events.eventStart_R(dataIndex) - handles.events.eventStart_R);
@@ -336,8 +336,8 @@ if ~strcmp(handles.dataset, '6') && ~strcmp(handles.dataset, '7')
                     handles.events.eventEnd_L = sort([handles.events.eventEnd_L, handles.events.eventEnd_R(dataIndex)]);
                     handles.events.eventStart_R(dataIndex) = [];
                     handles.events.eventEnd_R(dataIndex) = [];
-                    handles.events.groundReactionForceCorrection_L = [handles.events.groundReactionForceCorrection_L(1:(dataIndex - 1)), 1 , handles.events.groundReactionForceCorrection_L(dataIndex:end)];
-                    handles.events.groundReactionForceCorrection_R(dataIndex) = [];
+                    handles.events.grfCorrection_L = [handles.events.grfCorrection_L(1:(dataIndex - 1)), 1 , handles.events.grfCorrection_L(dataIndex:end)];
+                    handles.events.grfCorrection_R(dataIndex) = [];
                     dataLength = dataLength - 1;
                 end
             end
@@ -382,8 +382,8 @@ if handles.dataLoaded
     % Plot ground reaction forces or marker motion in main axes
     if ~strcmp(handles.dataset, '6')
         time = 0:(1 / handles.force.frameRate):((handles.force.frames - 1) / handles.force.frameRate);
-        plot(handles.mainAxes, time, handles.force.groundReactionForceY_L, 'r');
-        plot(handles.mainAxes, time, handles.force.groundReactionForceY_R, 'b');
+        plot(handles.mainAxes, time, handles.force.grfY_L, 'r');
+        plot(handles.mainAxes, time, handles.force.grfY_R, 'b');
     else
         time = 0:(1 / handles.motion.frameRate):((handles.motion.frames - 1) / handles.motion.frameRate);
         plot(handles.mainAxes, time, handles.motion.markerY(14, :), 'r');
@@ -426,8 +426,8 @@ if handles.dataLoaded
         xlim(handles.mainAxes, [max(0, handles.meta.startTime + handles.currentEvent - 10), min((handles.motion.frames * handles.motion.frameRate), handles.meta.startTime + handles.currentEvent + 10)]);
     end
     if ~strcmp(handles.dataset, '6')
-        maximumValue = max(max(handles.force.groundReactionForceY_L), max(handles.force.groundReactionForceY_R));
-        minimumValue = min(min(handles.force.groundReactionForceY_L), min(handles.force.groundReactionForceY_R));
+        maximumValue = max(max(handles.force.grfY_L), max(handles.force.grfY_R));
+        minimumValue = min(min(handles.force.grfY_L), min(handles.force.grfY_R));
     else
         maximumValue = max(max(handles.motion.markerY(14, :)), max(handles.motion.markerY(15, :)));
         minimumValue = min(min(handles.motion.markerY(14, :)), min(handles.motion.markerY(15, :)));
@@ -604,7 +604,7 @@ if handles.file
         elseif strcmp(handles.dataset, '6') || strcmp(handles.dataset, '7')
             handles.events.eventStart = [];
             handles.events.eventEnd = [];
-            handles.events.groundReactionForceCorrection = [];
+            handles.events.grfCorrection = [];
         end
         
         % Create sorted event start and end lists
@@ -613,12 +613,12 @@ if handles.file
             handles.eventEndList = {};
             if ~isempty(handles.events.eventStart_L) || ~isempty(handles.events.eventStart_R)
                 for dataIndex = 1:length(handles.events.eventStart_L)
-                        handles.eventStartList{end + 1} = {handles.events.eventStart_L(dataIndex), 'L', handles.events.groundReactionForceCorrection_L(dataIndex)};
-                        handles.eventEndList{end + 1} = {handles.events.eventEnd_L(dataIndex), 'L', handles.events.groundReactionForceCorrection_L(dataIndex)};
+                        handles.eventStartList{end + 1} = {handles.events.eventStart_L(dataIndex), 'L', handles.events.grfCorrection_L(dataIndex)};
+                        handles.eventEndList{end + 1} = {handles.events.eventEnd_L(dataIndex), 'L', handles.events.grfCorrection_L(dataIndex)};
                 end
                 for dataIndex = 1:length(handles.events.eventStart_R)
-                    handles.eventStartList{end + 1} = {handles.events.eventStart_R(dataIndex), 'R', handles.events.groundReactionForceCorrection_R(dataIndex)};
-                    handles.eventEndList{end + 1} = {handles.events.eventEnd_R(dataIndex), 'R', handles.events.groundReactionForceCorrection_R(dataIndex)};
+                    handles.eventStartList{end + 1} = {handles.events.eventStart_R(dataIndex), 'R', handles.events.grfCorrection_R(dataIndex)};
+                    handles.eventEndList{end + 1} = {handles.events.eventEnd_R(dataIndex), 'R', handles.events.grfCorrection_R(dataIndex)};
                 end
                 entries = cellfun(@(x) x{1}, handles.eventStartList);
                 [~, sortedIndices] = sort(entries);
@@ -679,15 +679,15 @@ if handles.dataLoaded
         % Update event and correction lists
         handles.events.eventStart_L = [];
         handles.events.eventStart_R = [];
-        handles.events.groundReactionForceCorrection_L = [];
-        handles.events.groundReactionForceCorrection_R = [];
+        handles.events.grfCorrection_L = [];
+        handles.events.grfCorrection_R = [];
         for eventIndex = 1:length(handles.eventStartList)
             if strcmp(handles.eventStartList{eventIndex}{2}, 'L')
                 handles.events.eventStart_L = [handles.events.eventStart_L, handles.eventStartList{eventIndex}{1} / handles.force.frameRate];
-                handles.events.groundReactionForceCorrection_L = [handles.events.groundReactionForceCorrection_L, handles.eventStartList{eventIndex}{3}];
+                handles.events.grfCorrection_L = [handles.events.grfCorrection_L, handles.eventStartList{eventIndex}{3}];
             else
                 handles.events.eventStart_R = [handles.events.eventStart_R, handles.eventStartList{eventIndex}{1} / handles.force.frameRate];
-                handles.events.groundReactionForceCorrection_R = [handles.events.groundReactionForceCorrection_R, handles.eventStartList{eventIndex}{3}];
+                handles.events.grfCorrection_R = [handles.events.grfCorrection_R, handles.eventStartList{eventIndex}{3}];
             end
         end
         handles.events.eventEnd_L = [];
@@ -841,7 +841,7 @@ if handles.dataLoaded
         % Delete last event
         handles.events.eventStart(end) = [];
         handles.events.eventEnd(end) = [];
-        handles.events.groundReactionForceCorrection(end) = [];
+        handles.events.grfCorrection(end) = [];
     end
 
     % Plot eventdetection
@@ -937,7 +937,7 @@ elseif strcmp(handles.dataset, '6') || strcmp(handles.dataset, '7')
     if eventEnd > handles.events.eventStart(end)
         % Add selected event end
         handles.events.eventEnd = [handles.events.eventEnd, eventEnd];
-        handles.events.groundReactionForceCorrection = [handles.events.groundReactionForceCorrection, 1];
+        handles.events.grfCorrection = [handles.events.grfCorrection, 1];
     else
         % Remove added event start
         handles.events.eventStart = handles.events.eventStart(1:(end - 1));
@@ -963,15 +963,15 @@ if handles.dataLoaded && ~strcmp(handles.dataset, '6') && ~strcmp(handles.datase
     for eventIndex = 1:length(handles.eventStartList)
         if strcmp(handles.eventStartList{eventIndex}{2}, 'L')
             indices = logical([zeros(1, handles.eventStartList{eventIndex}{1} - 1), bitand(handles.events.contactPhase_L(handles.eventStartList{eventIndex}{1}:handles.eventEndList{eventIndex}{1}), ~handles.events.contactPhase_R(handles.eventStartList{eventIndex}{1}:handles.eventEndList{eventIndex}{1}))]);
-            if (handles.eventStartList{eventIndex}{3} == 1) || (median(handles.force.groundReactionForceY_R(indices)) > handles.lowerLimit)
-                handles.force.groundReactionForceY_L(indices) = handles.force.groundReactionForceY_L(indices) + handles.force.groundReactionForceY_R(indices);
-                handles.force.groundReactionForceY_R(indices) = 0;
+            if (handles.eventStartList{eventIndex}{3} == 1) || (median(handles.force.grfY_R(indices)) > handles.lowerLimit)
+                handles.force.grfY_L(indices) = handles.force.grfY_L(indices) + handles.force.grfY_R(indices);
+                handles.force.grfY_R(indices) = 0;
             end
         elseif strcmp(handles.eventStartList{eventIndex}{2}, 'R')
             indices = logical([zeros(1, handles.eventStartList{eventIndex}{1} - 1), bitand(handles.events.contactPhase_R(handles.eventStartList{eventIndex}{1}:handles.eventEndList{eventIndex}{1}), ~handles.events.contactPhase_L(handles.eventStartList{eventIndex}{1}:handles.eventEndList{eventIndex}{1}))]);
-            if (handles.eventStartList{eventIndex}{3} == 1) || (median(handles.force.groundReactionForceY_L(indices)) > handles.lowerLimit)
-                handles.force.groundReactionForceY_R(indices) = handles.force.groundReactionForceY_R(indices) + handles.force.groundReactionForceY_L(indices);
-                handles.force.groundReactionForceY_L(indices) = 0;
+            if (handles.eventStartList{eventIndex}{3} == 1) || (median(handles.force.grfY_L(indices)) > handles.lowerLimit)
+                handles.force.grfY_R(indices) = handles.force.grfY_R(indices) + handles.force.grfY_L(indices);
+                handles.force.grfY_L(indices) = 0;
             end
         end
     end
