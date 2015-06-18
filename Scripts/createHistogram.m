@@ -1,5 +1,5 @@
 % ------------------------------------------------------
-% This function creats a histogram from the give data and bin parameters.
+% This function creates a histogram from the give data and bin parameters.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science

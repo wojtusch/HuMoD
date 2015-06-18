@@ -128,10 +128,10 @@ for subjectIndex = 1:length(subjects)
             % Plot center of pressure
             if plotCenterOfPressure
                 if ~strcmp(dataset, '6') && ~strcmp(dataset, '7') && ~strcmp(dataset, '8')
-                    leftCOP = plot3d(mean([force.centerOfPressureX_L(2 * currentFrame - 1), force.centerOfPressureX_L(2 * currentFrame)]), mean([force.centerOfPressureY_L(2 * currentFrame - 1), force.centerOfPressureY_L(2 * currentFrame)]), mean([force.centerOfPressureZ_L(2 * currentFrame - 1), force.centerOfPressureZ_L(2 * currentFrame)]), 'r^');
-                    rightCOP = plot3d(mean([force.centerOfPressureX_R(2 * currentFrame - 1), force.centerOfPressureX_R(2 * currentFrame)]), mean([force.centerOfPressureY_R(2 * currentFrame - 1), force.centerOfPressureY_R(2 * currentFrame)]), mean([force.centerOfPressureZ_R(2 * currentFrame - 1), force.centerOfPressureZ_R(2 * currentFrame)]), 'b^');
+                    leftCOP = plot3d(mean([force.copX_L(2 * currentFrame - 1), force.copX_L(2 * currentFrame)]), mean([force.copY_L(2 * currentFrame - 1), force.copY_L(2 * currentFrame)]), mean([force.copZ_L(2 * currentFrame - 1), force.copZ_L(2 * currentFrame)]), 'r^');
+                    rightCOP = plot3d(mean([force.copX_R(2 * currentFrame - 1), force.copX_R(2 * currentFrame)]), mean([force.copY_R(2 * currentFrame - 1), force.copY_R(2 * currentFrame)]), mean([force.copZ_R(2 * currentFrame - 1), force.copZ_R(2 * currentFrame)]), 'b^');
                 else
-                    totalCOP = plot3d(mean([force.centerOfPressureX(2 * currentFrame - 1), force.centerOfPressureX(2 * currentFrame)]), mean([force.centerOfPressureY(2 * currentFrame - 1), force.centerOfPressureY(2 * currentFrame)]), mean([force.centerOfPressureZ(2 * currentFrame - 1), force.centerOfPressureZ(2 * currentFrame)]), 'k^');
+                    totalCOP = plot3d(mean([force.copX(2 * currentFrame - 1), force.copX(2 * currentFrame)]), mean([force.copY(2 * currentFrame - 1), force.copY(2 * currentFrame)]), mean([force.copZ(2 * currentFrame - 1), force.copZ(2 * currentFrame)]), 'k^');
                 end
             end
             
