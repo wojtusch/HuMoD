@@ -17,6 +17,8 @@ close all;
 addpath('Scripts');
 
 % Set parameters
+startFrameNumber = 1;
+endFrameNumber = inf;
 plotCenterOfPressure = 1;
 groundXLimits = [-1000, 1000];
 groundZLimits = [-1000, 1000];
@@ -45,8 +47,8 @@ for subjectIndex = 1:length(subjects)
     for datasetIndex = 1:length(datasets)
 
         % Set parameters
-        startFrame = 1;
-        endFrame = inf;
+        startFrame = startFrameNumber;
+        endFrame = endFrameNumber;
         subject = subjects{subjectIndex};
         dataset = datasets{datasetIndex};
         fprintf('STATUS: Processing dataset %s %s.\n', subject, dataset);
@@ -114,16 +116,16 @@ for subjectIndex = 1:length(subjects)
             % Plot markers and joints
             markers = plot3d(motion.markerX(:, currentFrame), motion.markerY(:, currentFrame), motion.markerZ(:, currentFrame), 'r.');
             surface = plot3d(motion.surfaceX(:, currentFrame), motion.surfaceY(:, currentFrame), motion.surfaceZ(:, currentFrame), 'g.');
-            joints = plot3d(motion.jointX(:, currentFrame), motion.jointY(:, currentFrame), motion.jointZ(:, currentFrame), 'b*');
+            joints = plot3d(motion.jointX.estimated(:, currentFrame), motion.jointY.estimated(:, currentFrame), motion.jointZ.estimated(:, currentFrame), 'b*');
 
             % Plot connection lines
-            head = plot3d([motion.jointX(1, currentFrame), motion.surfaceX(1, currentFrame), motion.surfaceX(2, currentFrame), motion.jointX(1, currentFrame)], [motion.jointY(1, currentFrame), motion.surfaceY(1, currentFrame), motion.surfaceY(2, currentFrame), motion.jointY(1, currentFrame)], [motion.jointZ(1, currentFrame), motion.surfaceZ(1, currentFrame), motion.surfaceZ(2, currentFrame), motion.jointZ(1, currentFrame)], 'k');
-            leftArm = plot3d([motion.jointX(1, currentFrame), motion.jointX(2, currentFrame), motion.jointX(4, currentFrame), motion.markerX(8, currentFrame)], [motion.jointY(1, currentFrame), motion.jointY(2, currentFrame), motion.jointY(4, currentFrame), motion.markerY(8, currentFrame)], [motion.jointZ(1, currentFrame), motion.jointZ(2, currentFrame), motion.jointZ(4, currentFrame), motion.markerZ(8, currentFrame)], 'k');
-            rightArm = plot3d([motion.jointX(1, currentFrame), motion.jointX(3, currentFrame), motion.jointX(5, currentFrame), motion.markerX(9, currentFrame)], [motion.jointY(1, currentFrame), motion.jointY(3, currentFrame), motion.jointY(5, currentFrame), motion.markerY(9, currentFrame)], [motion.jointZ(1, currentFrame), motion.jointZ(3, currentFrame), motion.jointZ(5, currentFrame), motion.markerZ(9, currentFrame)], 'k');
-            spinal = plot3d([motion.jointX(7, currentFrame), motion.jointX(6, currentFrame), motion.jointX(1, currentFrame)], [motion.jointY(7, currentFrame), motion.jointY(6, currentFrame), motion.jointY(1, currentFrame)], [motion.jointZ(7, currentFrame), motion.jointZ(6, currentFrame), motion.jointZ(1, currentFrame)], 'k');
-            pelvis = plot3d([motion.jointX(7, currentFrame), motion.jointX(8, currentFrame), motion.jointX(9, currentFrame), motion.jointX(7, currentFrame)], [motion.jointY(7, currentFrame), motion.jointY(8, currentFrame), motion.jointY(9, currentFrame), motion.jointY(7, currentFrame)], [motion.jointZ(7, currentFrame), motion.jointZ(8, currentFrame), motion.jointZ(9, currentFrame), motion.jointZ(7, currentFrame)], 'k');
-            leftLeg = plot3d([motion.jointX(14, currentFrame), motion.jointX(12, currentFrame), motion.jointX(10, currentFrame), motion.jointX(8, currentFrame)], [motion.jointY(14, currentFrame), motion.jointY(12, currentFrame), motion.jointY(10, currentFrame), motion.jointY(8, currentFrame)], [motion.jointZ(14, currentFrame), motion.jointZ(12, currentFrame), motion.jointZ(10, currentFrame), motion.jointZ(8, currentFrame)], 'k');
-            rightLeg = plot3d([motion.jointX(15, currentFrame), motion.jointX(13, currentFrame), motion.jointX(11, currentFrame), motion.jointX(9, currentFrame)], [motion.jointY(15, currentFrame), motion.jointY(13, currentFrame), motion.jointY(11, currentFrame), motion.jointY(9, currentFrame)], [motion.jointZ(15, currentFrame), motion.jointZ(13, currentFrame), motion.jointZ(11, currentFrame), motion.jointZ(9, currentFrame)], 'k');
+            head = plot3d([motion.jointX.estimated(1, currentFrame), motion.surfaceX(1, currentFrame), motion.surfaceX(2, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.surfaceY(1, currentFrame), motion.surfaceY(2, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.surfaceZ(1, currentFrame), motion.surfaceZ(2, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'k');
+            leftArm = plot3d([motion.jointX.estimated(1, currentFrame), motion.jointX.estimated(2, currentFrame), motion.jointX.estimated(4, currentFrame), motion.markerX(8, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.jointY.estimated(2, currentFrame), motion.jointY.estimated(4, currentFrame), motion.markerY(8, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.jointZ.estimated(2, currentFrame), motion.jointZ.estimated(4, currentFrame), motion.markerZ(8, currentFrame)], 'k');
+            rightArm = plot3d([motion.jointX.estimated(1, currentFrame), motion.jointX.estimated(3, currentFrame), motion.jointX.estimated(5, currentFrame), motion.markerX(9, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.jointY.estimated(3, currentFrame), motion.jointY.estimated(5, currentFrame), motion.markerY(9, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.jointZ.estimated(3, currentFrame), motion.jointZ.estimated(5, currentFrame), motion.markerZ(9, currentFrame)], 'k');
+            spinal = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(6, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(6, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(6, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'k');
+            pelvis = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(8, currentFrame), motion.jointX.estimated(9, currentFrame), motion.jointX.estimated(7, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(8, currentFrame), motion.jointY.estimated(9, currentFrame), motion.jointY.estimated(7, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(8, currentFrame), motion.jointZ.estimated(9, currentFrame), motion.jointZ.estimated(7, currentFrame)], 'k');
+            leftLeg = plot3d([motion.jointX.estimated(14, currentFrame), motion.jointX.estimated(12, currentFrame), motion.jointX.estimated(10, currentFrame), motion.jointX.estimated(8, currentFrame)], [motion.jointY.estimated(14, currentFrame), motion.jointY.estimated(12, currentFrame), motion.jointY.estimated(10, currentFrame), motion.jointY.estimated(8, currentFrame)], [motion.jointZ.estimated(14, currentFrame), motion.jointZ.estimated(12, currentFrame), motion.jointZ.estimated(10, currentFrame), motion.jointZ.estimated(8, currentFrame)], 'k');
+            rightLeg = plot3d([motion.jointX.estimated(15, currentFrame), motion.jointX.estimated(13, currentFrame), motion.jointX.estimated(11, currentFrame), motion.jointX.estimated(9, currentFrame)], [motion.jointY.estimated(15, currentFrame), motion.jointY.estimated(13, currentFrame), motion.jointY.estimated(11, currentFrame), motion.jointY.estimated(9, currentFrame)], [motion.jointZ.estimated(15, currentFrame), motion.jointZ.estimated(13, currentFrame), motion.jointZ.estimated(11, currentFrame), motion.jointZ.estimated(9, currentFrame)], 'k');
 
             % Plot center of pressure
             if plotCenterOfPressure

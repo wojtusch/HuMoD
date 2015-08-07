@@ -104,7 +104,9 @@ for subjectIndex = 1:length(subjects)
             force.grfY_R = grfY_R;
             events.contactPhase_L = contactPhase_L;
             events.contactPhase_R = contactPhase_R;
+            force = orderfields(force);
             variables.force = force;
+            events = orderfields(events);
             variables.events = events;
             save(file, '-struct', 'variables');
         

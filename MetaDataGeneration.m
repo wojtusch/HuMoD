@@ -91,6 +91,7 @@ for subjectIndex = 1:length(subjects)
             fprintf('ERROR: No matching subject found!\n');
             return;
         end
+        processedVariables.meta = orderfields(processedVariables.meta);
         save(processedFile, '-struct', 'processedVariables');
         
     end

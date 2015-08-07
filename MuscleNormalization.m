@@ -65,7 +65,7 @@ for subjectIndex = 1:length(subjects)
         end
         
         % Aggretage activities
-        aggregatedActivities = [aggregatedActivities, muscle.filteredActivities];
+        aggregatedActivities = [aggregatedActivities, muscle.activities.filtered];
         
     end
     maximumValues = max(aggregatedActivities, [], 2)';
@@ -112,16 +112,17 @@ for subjectIndex = 1:length(subjects)
             continue;
         end
 
-        % Normalize the post processed the muscle data
-        muscle.normalizedActivities = zeros(size(muscle.filteredActivities));
+        % Normalize the processed muscle data
+        muscle.activities.normalized = zeros(size(muscle.activities.filtered));
         for muscleIndex = 1:length(muscle.muscleLabels);
-            muscle.normalizedActivities(muscleIndex, :) = muscle.filteredActivities(muscleIndex, :) / maximumValues(muscleIndex);
+            muscle.activities.normalized(muscleIndex, :) = muscle.activities.filtered(muscleIndex, :) / maximumValues(muscleIndex);
         end    
         muscle.maximumValues = maximumValues;
         muscle.minimumValues = minimumValues;
 
         % Save processed data
         fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
+        muscle = orderfields(muscle);
         variables.muscle = muscle;
         save(file, '-struct', 'variables');
 

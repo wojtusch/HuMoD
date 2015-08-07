@@ -32,10 +32,7 @@ datasets = {
     '5.2', ...
     '6', ...
     '7', ...
-    '8', ...
-    '9.1', ...
-    '9.2', ...
-    '9.3' ...
+    '8' ...
 };
 subjects = {
     'A',...
@@ -68,16 +65,16 @@ for subjectIndex = 1:length(subjects)
 
         % Plot muscle data
         filterAlgorithm = muscle.filterAlgorithm;
-        if ~strcmpi(filterVariant, 'filtered') && ~isfield(muscle, 'normalizedActivities')
+        if ~strcmpi(filterVariant, 'filtered') && ~isfield(muscle, 'activities.normalized')
             fprintf('ERROR: Dataset %s %s does not contain normalized activities.\n', subject, dataset);
             continue;
         else
             visualization = figure('Name', 'Muscle activities', 'NumberTitle', 'off', 'Color', 'white', 'Position', [0, 0, 1400, 600]);
             time = 0:(1 / muscle.frameRate):((muscle.frames - 1) / muscle.frameRate);
-            if ~strcmpi(filterVariant, 'filtered')
-                data = muscle.normalizedActivities;
+            if strcmpi(filterVariant, 'filtered')
+                data = muscle.activities.filtered;
             else
-                data = muscle.filteredActivities;
+                data = muscle.activities.normalized;
             end
             for muscleIndex = 1:2:length(muscle.muscleLabels)
                 subplot(2, 4, ceil(muscleIndex / 2));

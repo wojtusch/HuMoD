@@ -133,6 +133,7 @@ for subjectIndex = 1:length(subjects)
         ground.rotationMotion2Force = rotationMotion2Force;
         ground.groundPosition = [0; 0; 0];
         ground.groundNormal = [0; 1; 0];
+        ground = orderfields(ground);
         variables.ground = ground;
         save(file, '-struct', 'variables');
         fprintf('STATUS: Saving dataset %s %s.\n', subjects{subjectIndex}, datasets{datasetIndex});

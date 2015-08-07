@@ -1,6 +1,6 @@
 % ------------------------------------------------------
 % This function returns the average x, y and z coordinates of the given
-% marker within the spefified frame range. It is required to have the
+% marker within the specified frame range. It is required to have the
 % corresponding motion data variable in workspace.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
@@ -24,13 +24,13 @@ if ~isempty(find(ismember(list, 'motion'), 1))
     end
     if ~isempty(index) && (frameStart < frameEnd) && (frameStart > 0) && (frameEnd <= motion.frames)
         if strcmp(type, 'marker')
-            coordinates(1) = sum(motion.markerX(index, frameStart:frameEnd)) / (frameEnd - frameStart);
-            coordinates(2) = sum(motion.markerY(index, frameStart:frameEnd)) / (frameEnd - frameStart);
-            coordinates(3) = sum(motion.markerZ(index, frameStart:frameEnd)) / (frameEnd - frameStart);
+            coordinates(1) = sum(motion.markerX(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
+            coordinates(2) = sum(motion.markerY(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
+            coordinates(3) = sum(motion.markerZ(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
         else
-            coordinates(1) = sum(motion.surfaceX(index, frameStart:frameEnd)) / (frameEnd - frameStart);
-            coordinates(2) = sum(motion.surfaceY(index, frameStart:frameEnd)) / (frameEnd - frameStart);
-            coordinates(3) = sum(motion.surfaceZ(index, frameStart:frameEnd)) / (frameEnd - frameStart);
+            coordinates(1) = sum(motion.surfaceX(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
+            coordinates(2) = sum(motion.surfaceY(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
+            coordinates(3) = sum(motion.surfaceZ(index, frameStart:frameEnd)) / (frameEnd - frameStart + 1);
         end
     else
         coordinates = [];

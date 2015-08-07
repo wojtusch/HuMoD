@@ -32,7 +32,9 @@ directories = {
     % Directory for motion visualization
     [path, filesep, 'Motion', filesep, '<subject>'], 'Motion visualization will be saved here'; ...
     % Directory for muscle visualization
-    [path, filesep, 'Muscle', filesep, '<subject>'], 'Muscle visualization will be saved here'
+    [path, filesep, 'Muscle', filesep, '<subject>'], 'Muscle visualization will be saved here'; ...
+    % Directory for trajectory visualization
+    [path, filesep, 'TRajectory', filesep, '<subject>'], 'Trajectory visualization will be saved here' ...
 };
 
 for subjectIndex = 1:length(subjects)

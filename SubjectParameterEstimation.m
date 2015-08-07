@@ -108,8 +108,12 @@ thighSegmentLengthY_L = zeros(length(datasets), 1);
 thighSegmentLengthY_R = zeros(length(datasets), 1);
 shankSegmentLengthY_L = zeros(length(datasets), 1);
 shankSegmentLengthY_R = zeros(length(datasets), 1);
-footReferenceLength_L = zeros(length(datasets), 1);
-footReferenceLength_R = zeros(length(datasets), 1);
+footReferenceLengthX_L = zeros(length(datasets), 1);
+footReferenceLengthY_L = zeros(length(datasets), 1);
+footReferenceLengthZ_L = zeros(length(datasets), 1);
+footReferenceLengthX_R = zeros(length(datasets), 1);
+footReferenceLengthY_R = zeros(length(datasets), 1);
+footReferenceLengthZ_R = zeros(length(datasets), 1);
 footSegmentLengthY_L = zeros(length(datasets), 1);
 footSegmentLengthY_R = zeros(length(datasets), 1);
 headRelativePositionGLA = zeros(length(datasets), 3);
@@ -164,6 +168,7 @@ absolutePositionSJ_L = zeros(length(datasets), 3);
 absolutePositionSJ_R = zeros(length(datasets), 3);
 absolutePositionEJ_L = zeros(length(datasets), 3);
 absolutePositionEJ_R = zeros(length(datasets), 3);
+absolutePositionULJ = zeros(length(datasets), 3);
 absolutePositionLLJ = zeros(length(datasets), 3);
 absolutePositionHJ_L = zeros(length(datasets), 3);
 absolutePositionHJ_R = zeros(length(datasets), 3);
@@ -209,36 +214,44 @@ for datasetIndex = 1:length(datasets)
     % Compute average lengths for each dataset with estimating the head
     % segment length by applying the body height
     groundPosition = ground.groundPosition;
-    headSegmentLengthY(datasetIndex) = bodyHeight - [0, 1, 0] * (getAverageJoint('LNJ', initialStartFrame, initialEndFrame) - groundPosition);
-    torsoSegmentLengthY(datasetIndex) = norm(getAverageVector('LLJ', 'joint', 'LNJ', 'joint', initialStartFrame, initialEndFrame));
-    upperArmSegmentLengthY_L(datasetIndex) = norm(getAverageVector('EJ_L', 'joint', 'SJ_L', 'joint', initialStartFrame, initialEndFrame));
-    upperArmSegmentLengthY_R(datasetIndex) = norm(getAverageVector('EJ_R', 'joint', 'SJ_R', 'joint', initialStartFrame, initialEndFrame));
-    lowerArmSegmentLengthY_L(datasetIndex) = norm(getAverageVector('WRI_L', 'marker', 'EJ_L', 'joint', initialStartFrame, initialEndFrame));
-    lowerArmSegmentLengthY_R(datasetIndex) = norm(getAverageVector('WRI_R', 'marker', 'EJ_R', 'joint', initialStartFrame, initialEndFrame));
-    pelvisSegmentLengthY(datasetIndex) = norm(cross(getAverageVector('HJ_L', 'joint', 'LLJ', 'joint', initialStartFrame, initialEndFrame), getAverageVector('HJ_L', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame))) / norm(getAverageVector('HJ_L', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame));
-    pelvisSegmentLengthZ(datasetIndex) = norm(getAverageVector('HJ_L', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame));
-    thighSegmentLengthY_L(datasetIndex) = norm(getAverageVector('KJ_L', 'joint', 'HJ_L', 'joint', initialStartFrame, initialEndFrame));
-    thighSegmentLengthY_R(datasetIndex) = norm(getAverageVector('KJ_R', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame));
-    shankSegmentLengthY_L(datasetIndex) = norm(getAverageVector('AJ_L', 'joint', 'KJ_L', 'joint', initialStartFrame, initialEndFrame));
-    shankSegmentLengthY_R(datasetIndex) = norm(getAverageVector('AJ_R', 'joint', 'KJ_R', 'joint', initialStartFrame, initialEndFrame));
-    footReferenceLength_L(datasetIndex) = norm(getAverageJoint('AJ_L', initialStartFrame, initialEndFrame) - vectorMT_L);
-    footReferenceLength_R(datasetIndex) = norm(getAverageJoint('AJ_R', initialStartFrame, initialEndFrame) - vectorMT_R);
-    footSegmentLengthY_L(datasetIndex) = [0, 1, 0] * (getAverageJoint('AJ_L', initialStartFrame, initialEndFrame) - groundPosition);
-    footSegmentLengthY_R(datasetIndex) = [0, 1, 0] * (getAverageJoint('AJ_R', initialStartFrame, initialEndFrame) - groundPosition);
+    headSegmentLengthY(datasetIndex) = bodyHeight - [0, 1, 0] * (getAverageJoint('LNJ', 'estimatedJoint', initialStartFrame, initialEndFrame) - groundPosition);
+    torsoSegmentLengthY(datasetIndex) = getAverageDistance('LLJ', 'estimatedJoint', 'LNJ', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    upperArmSegmentLengthY_L(datasetIndex) = getAverageDistance('EJ_L', 'estimatedJoint', 'SJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    upperArmSegmentLengthY_R(datasetIndex) = getAverageDistance('EJ_R', 'estimatedJoint', 'SJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    lowerArmSegmentLengthY_L(datasetIndex) = getAverageDistance('WRI_L', 'marker', 'EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    lowerArmSegmentLengthY_R(datasetIndex) = getAverageDistance('WRI_R', 'marker', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    pelvisSegmentLengthY(datasetIndex) = norm((getAverageJoint('HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame) + getAverageVector('HJ_L', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame) / 2) - getAverageJoint('LLJ', 'estimatedJoint', initialStartFrame, initialEndFrame));
+    pelvisSegmentLengthZ(datasetIndex) = getAverageDistance('HJ_L', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    thighSegmentLengthY_L(datasetIndex) = getAverageDistance('KJ_L', 'estimatedJoint', 'HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    thighSegmentLengthY_R(datasetIndex) = getAverageDistance('KJ_R', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    shankSegmentLengthY_L(datasetIndex) = getAverageDistance('AJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    shankSegmentLengthY_R(datasetIndex) = getAverageDistance('AJ_R', 'estimatedJoint', 'KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    footReferenceVector = vectorMT_L - getAverageJoint('AJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    footReferenceLengthX_L(datasetIndex) = footReferenceVector(1);
+    footReferenceLengthY_L(datasetIndex) = footReferenceVector(2);
+    footReferenceLengthZ_L(datasetIndex) = footReferenceVector(3);
+    footReferenceVector = vectorMT_R - getAverageJoint('AJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    footReferenceLengthX_R(datasetIndex) = footReferenceVector(1);
+    footReferenceLengthY_R(datasetIndex) = footReferenceVector(2);
+    footReferenceLengthZ_R(datasetIndex) = footReferenceVector(3);
+    footSegmentLengthY_L(datasetIndex) = [0, 1, 0] * (getAverageJoint('AJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame) - groundPosition);
+    footSegmentLengthY_R(datasetIndex) = [0, 1, 0] * (getAverageJoint('AJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame) - groundPosition);
+    clear footReferenceVector
 
     % Compute average absolute joint positions for each dataset
-    absolutePositionLNJ(datasetIndex, :) = getAverageJoint('LNJ', initialStartFrame, initialEndFrame)';
-    absolutePositionSJ_L(datasetIndex, :) = getAverageJoint('SJ_L', initialStartFrame, initialEndFrame)';
-    absolutePositionSJ_R(datasetIndex, :) = getAverageJoint('SJ_R', initialStartFrame, initialEndFrame)';
-    absolutePositionEJ_L(datasetIndex, :) = getAverageJoint('EJ_L', initialStartFrame, initialEndFrame)';
-    absolutePositionEJ_R(datasetIndex, :) = getAverageJoint('EJ_R', initialStartFrame, initialEndFrame)';
-    absolutePositionLLJ(datasetIndex, :) = getAverageJoint('LLJ', initialStartFrame, initialEndFrame)';
-    absolutePositionHJ_L(datasetIndex, :) = getAverageJoint('HJ_L', initialStartFrame, initialEndFrame)';
-    absolutePositionHJ_R(datasetIndex, :) = getAverageJoint('HJ_R', initialStartFrame, initialEndFrame)';
-    absolutePositionKJ_L(datasetIndex, :) = getAverageJoint('KJ_L', initialStartFrame, initialEndFrame)';
-    absolutePositionKJ_R(datasetIndex, :) = getAverageJoint('KJ_R', initialStartFrame, initialEndFrame)';
-    absolutePositionAJ_L(datasetIndex, :) = getAverageJoint('AJ_L', initialStartFrame, initialEndFrame)';
-    absolutePositionAJ_R(datasetIndex, :) = getAverageJoint('AJ_R', initialStartFrame, initialEndFrame)';
+    absolutePositionLNJ(datasetIndex, :) = getAverageJoint('LNJ', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionSJ_L(datasetIndex, :) = getAverageJoint('SJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionSJ_R(datasetIndex, :) = getAverageJoint('SJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionEJ_L(datasetIndex, :) = getAverageJoint('EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionEJ_R(datasetIndex, :) = getAverageJoint('EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionULJ(datasetIndex, :) = getAverageJoint('ULJ', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionLLJ(datasetIndex, :) = getAverageJoint('LLJ', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionHJ_L(datasetIndex, :) = getAverageJoint('HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionHJ_R(datasetIndex, :) = getAverageJoint('HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionKJ_L(datasetIndex, :) = getAverageJoint('KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionKJ_R(datasetIndex, :) = getAverageJoint('KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionAJ_L(datasetIndex, :) = getAverageJoint('AJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame)';
+    absolutePositionAJ_R(datasetIndex, :) = getAverageJoint('AJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
     
     % Estimate average reference positions of adjacent markers and joints
     % in the head coordinate system for each dataset with approximating the
@@ -246,86 +259,86 @@ for datasetIndex = 1:length(datasets)
     % (GLA) and tragion (TRA) markers pointing superior
     yAxis = cross(getAverageVector('TRA_L', 'surface', 'TRA_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('TRA_L', 'surface', 'GLA', 'surface', initialStartFrame, initialEndFrame));
     yAxis = yAxis / norm(yAxis);
-    zAxis = cross(getAverageVector('LNJ', 'joint', 'GLA', 'surface', initialStartFrame, initialEndFrame), yAxis);
+    zAxis = cross(getAverageVector('LNJ', 'estimatedJoint', 'GLA', 'surface', initialStartFrame, initialEndFrame), yAxis);
     zAxis = zAxis / norm(zAxis);
     xAxis = cross(yAxis, zAxis);
     xAxis = xAxis / norm(xAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    headRelativePositionGLA(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'GLA', 'surface', initialStartFrame, initialEndFrame))';
-    headRelativePositionTRA_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'TRA_L', 'surface', initialStartFrame, initialEndFrame))';
-    headRelativePositionTRA_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'TRA_R', 'surface', initialStartFrame, initialEndFrame))';
+    headRelativePositionGLA(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'GLA', 'surface', initialStartFrame, initialEndFrame))';
+    headRelativePositionTRA_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'TRA_L', 'surface', initialStartFrame, initialEndFrame))';
+    headRelativePositionTRA_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'TRA_R', 'surface', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the torso coordinate system for each dataset
-    yAxis = getAverageVector('LLJ', 'joint', 'LNJ', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('LLJ', 'estimatedJoint', 'LNJ', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    zAxis = cross(getAverageVector('LNJ', 'joint', 'SUP', 'surface', initialStartFrame, initialEndFrame), yAxis);
+    zAxis = cross(getAverageVector('LNJ', 'estimatedJoint', 'SUP', 'surface', initialStartFrame, initialEndFrame), yAxis);
     zAxis = zAxis / norm(zAxis);
     xAxis = cross(yAxis, zAxis);
     xAxis = xAxis / norm(xAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    torsoRelativePositionACR_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'ACR_L', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionACR_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'ACR_R', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionSUP(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'SUP', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionC7(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'C7', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionT8(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'T8', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionT12(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'T12', 'surface', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionSJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'SJ_L', 'joint', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionSJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'SJ_R', 'joint', initialStartFrame, initialEndFrame))';
-    torsoRelativePositionLLJ(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'joint', 'LLJ', 'joint', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionACR_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'ACR_L', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionACR_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'ACR_R', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionSUP(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'SUP', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionC7(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'C7', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionT8(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'T8', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionT12(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'T12', 'surface', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionSJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'SJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionSJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'SJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame))';
+    torsoRelativePositionLLJ(datasetIndex, :) = (rotationMatrix \ getAverageVector('LNJ', 'estimatedJoint', 'LLJ', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left upper arm coordinate system for each dataset
-    yAxis = getAverageVector('EJ_L', 'joint', 'SJ_L', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('EJ_L', 'estimatedJoint', 'SJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('EJ_L', 'joint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
+    xAxis = cross(getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    upperArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'joint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
-    upperArmRelativePositionEJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'joint', 'EJ_L', 'joint', initialStartFrame, initialEndFrame))';
+    upperArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
+    upperArmRelativePositionEJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'estimatedJoint', 'EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the right upper arm coordinate system for each dataset
-    yAxis = getAverageVector('EJ_R', 'joint', 'SJ_R', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('EJ_R', 'estimatedJoint', 'SJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'joint', initialStartFrame, initialEndFrame), yAxis);
+    xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame), yAxis);
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    upperArmRelativePositionLHC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_R', 'joint', 'LHC_R', 'surface', initialStartFrame, initialEndFrame))';
-    upperArmRelativePositionEJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_R', 'joint', 'EJ_R', 'joint', initialStartFrame, initialEndFrame))';
+    upperArmRelativePositionLHC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_R', 'estimatedJoint', 'LHC_R', 'surface', initialStartFrame, initialEndFrame))';
+    upperArmRelativePositionEJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_R', 'estimatedJoint', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left lower arm coordinate system for each dataset
-    yAxis = getAverageVector('WRI_L', 'marker', 'EJ_L', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('WRI_L', 'marker', 'EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('EJ_L', 'joint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
+    xAxis = cross(getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    lowerArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'joint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
-    lowerArmRelativePositionWRI_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'joint', 'WRI_L', 'marker', initialStartFrame, initialEndFrame))';
+    lowerArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
+    lowerArmRelativePositionWRI_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'estimatedJoint', 'WRI_L', 'marker', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the right lower arm coordinate system for each dataset
-    yAxis = getAverageVector('WRI_R', 'marker', 'EJ_R', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('WRI_R', 'marker', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'joint', initialStartFrame, initialEndFrame), yAxis);
+    xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame), yAxis);
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    lowerArmRelativePositionLHC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_R', 'joint', 'LHC_R', 'surface', initialStartFrame, initialEndFrame))';
-    lowerArmRelativePositionWRI_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_R', 'joint', 'WRI_R', 'marker', initialStartFrame, initialEndFrame))';
+    lowerArmRelativePositionLHC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_R', 'estimatedJoint', 'LHC_R', 'surface', initialStartFrame, initialEndFrame))';
+    lowerArmRelativePositionWRI_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_R', 'estimatedJoint', 'WRI_R', 'marker', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
@@ -337,77 +350,77 @@ for datasetIndex = 1:length(datasets)
     xAxis = cross(yAxis, zAxis);
     xAxis = xAxis / norm(xAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    pelvisRelativePositionASIS_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'ASIS_L', 'surface', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionASIS_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'ASIS_R', 'surface', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionPSIS_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'PSIS_L', 'surface', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionPSIS_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'PSIS_R', 'surface', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionPS(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'PS', 'surface', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionHJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'HJ_L', 'joint', initialStartFrame, initialEndFrame))';
-    pelvisRelativePositionHJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionASIS_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'ASIS_L', 'surface', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionASIS_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'ASIS_R', 'surface', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionPSIS_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'PSIS_L', 'surface', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionPSIS_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'PSIS_R', 'surface', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionPS(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'PS', 'surface', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionHJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
+    pelvisRelativePositionHJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left thigh coordinate system for each dataset
-    yAxis = getAverageVector('KJ_L', 'joint', 'HJ_L', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('KJ_L', 'estimatedJoint', 'HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('HJ_L', 'joint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_L', 'joint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame));
+    xAxis = cross(getAverageVector('HJ_L', 'estimatedJoint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_L', 'estimatedJoint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    thighRelativePositionGTR_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'joint', 'GTR_L', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionLFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'joint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionMFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'joint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionKJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'joint', 'KJ_L', 'joint', initialStartFrame, initialEndFrame))';
+    thighRelativePositionGTR_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'GTR_L', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionLFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionMFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionKJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the right thigh coordinate system for each dataset
-    yAxis = getAverageVector('KJ_R', 'joint', 'HJ_R', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('KJ_R', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('HJ_R', 'joint', 'LFC_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_R', 'joint', 'MFC_R', 'surface', initialStartFrame, initialEndFrame));
+    xAxis = cross(getAverageVector('HJ_R', 'estimatedJoint', 'LFC_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_R', 'estimatedJoint', 'MFC_R', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    thighRelativePositionGTR_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'joint', 'GTR_R', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionLFC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'joint', 'LFC_R', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionMFC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'joint', 'MFC_R', 'surface', initialStartFrame, initialEndFrame))';
-    thighRelativePositionKJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'joint', 'KJ_R', 'joint', initialStartFrame, initialEndFrame))';
+    thighRelativePositionGTR_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'estimatedJoint', 'GTR_R', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionLFC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'estimatedJoint', 'LFC_R', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionMFC_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'estimatedJoint', 'MFC_R', 'surface', initialStartFrame, initialEndFrame))';
+    thighRelativePositionKJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_R', 'estimatedJoint', 'KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left shank coordinate system for each dataset
-    yAxis = getAverageVector('AJ_L', 'joint', 'KJ_L', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('AJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('KJ_L', 'joint', 'MM_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_L', 'joint', 'LM_L', 'surface', initialStartFrame, initialEndFrame));
+    xAxis = cross(getAverageVector('KJ_L', 'estimatedJoint', 'MM_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_L', 'estimatedJoint', 'LM_L', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    shankRelativePositionLM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'joint', 'LM_L', 'surface', initialStartFrame, initialEndFrame))';
-    shankRelativePositionMM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'joint', 'MM_L', 'surface', initialStartFrame, initialEndFrame))';
-    shankRelativePositionAJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'joint', 'AJ_L', 'joint', initialStartFrame, initialEndFrame))';
+    shankRelativePositionLM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'LM_L', 'surface', initialStartFrame, initialEndFrame))';
+    shankRelativePositionMM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'MM_L', 'surface', initialStartFrame, initialEndFrame))';
+    shankRelativePositionAJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'AJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the right shank coordinate system for each dataset
-    yAxis = getAverageVector('AJ_R', 'joint', 'KJ_R', 'joint', initialStartFrame, initialEndFrame);
+    yAxis = getAverageVector('AJ_R', 'estimatedJoint', 'KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
-    xAxis = cross(getAverageVector('KJ_R', 'joint', 'LM_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_R', 'joint', 'MM_L', 'surface', initialStartFrame, initialEndFrame));
+    xAxis = cross(getAverageVector('KJ_R', 'estimatedJoint', 'LM_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_R', 'estimatedJoint', 'MM_R', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    shankRelativePositionLM_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'joint', 'LM_R', 'surface', initialStartFrame, initialEndFrame))';
-    shankRelativePositionMM_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'joint', 'MM_R', 'surface', initialStartFrame, initialEndFrame))';
-    shankRelativePositionAJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'joint', 'AJ_R', 'joint', initialStartFrame, initialEndFrame))';
+    shankRelativePositionLM_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'estimatedJoint', 'LM_R', 'surface', initialStartFrame, initialEndFrame))';
+    shankRelativePositionMM_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'estimatedJoint', 'MM_R', 'surface', initialStartFrame, initialEndFrame))';
+    shankRelativePositionAJ_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_R', 'estimatedJoint', 'AJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left foot coordinate system for each dataset with estimating
-    % the all required points from existing marker positions of the
-    % metatarsal head 2 (MT2) and metatarsal head 5 (MT5)
+    % all required points from existing marker positions of the metatarsal
+    % head 2 (MT2) and metatarsal head 5 (MT5)
     xAxis = vectorMT_L - getAverageMarker('CAL_L', 'surface', initialStartFrame, initialEndFrame);
     xAxis = xAxis / norm(xAxis);
     yAxis = cross(getAverageVector('CAL_L', 'surface', 'MT2_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('CAL_L', 'surface', 'MT5_L', 'surface', initialStartFrame, initialEndFrame));
@@ -415,15 +428,15 @@ for datasetIndex = 1:length(datasets)
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    footRelativePositionCAL_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'joint', 'CAL_L', 'surface', initialStartFrame, initialEndFrame))';
-    footRelativePositionMT2_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'joint', 'MT2_L', 'surface', initialStartFrame, initialEndFrame))';
-    footRelativePositionMT5_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'joint', 'MT5_L', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionCAL_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'CAL_L', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionMT2_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'MT2_L', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionMT5_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'MT5_L', 'surface', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix vectorMT_L;
     
     % Estimate average reference positions of adjacent markers and joints
     % in the right foot coordinate system for each dataset with estimating
-    % the all required points from existing marker positions of the
-    % metatarsal head 2 (MT2) and metatarsal head 5 (MT5)
+    % all required points from existing marker positions of the metatarsal
+    % head 2 (MT2) and metatarsal head 5 (MT5)
     xAxis = vectorMT_R - getAverageMarker('CAL_R', 'surface', initialStartFrame, initialEndFrame);
     xAxis = xAxis / norm(xAxis);
     yAxis = cross(getAverageVector('CAL_R', 'surface', 'MT5_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('CAL_R', 'surface', 'MT2_R', 'surface', initialStartFrame, initialEndFrame));
@@ -431,9 +444,9 @@ for datasetIndex = 1:length(datasets)
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
-    footRelativePositionCAL_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'joint', 'CAL_R', 'surface', initialStartFrame, initialEndFrame))';
-    footRelativePositionMT2_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'joint', 'MT2_R', 'surface', initialStartFrame, initialEndFrame))';
-    footRelativePositionMT5_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'joint', 'MT5_R', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionCAL_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'CAL_R', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionMT2_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'MT2_R', 'surface', initialStartFrame, initialEndFrame))';
+    footRelativePositionMT5_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'MT5_R', 'surface', initialStartFrame, initialEndFrame))';
     clear xAxis yAxis zAxis rotationMatrix vectorMT_R;
     
     % Print status
@@ -455,8 +468,12 @@ thigh_L.segmentLengthY = median(thighSegmentLengthY_L);
 thigh_R.segmentLengthY = median(thighSegmentLengthY_R);
 shank_L.segmentLengthY = median(shankSegmentLengthY_L);
 shank_R.segmentLengthY = median(shankSegmentLengthY_R);
-foot_L.referenceLength = median(footReferenceLength_L);
-foot_R.referenceLength = median(footReferenceLength_R);
+foot_L.referenceLengthX = median(footReferenceLengthX_L);
+foot_L.referenceLengthY = median(footReferenceLengthY_L);
+foot_L.referenceLengthZ = median(footReferenceLengthZ_L);
+foot_R.referenceLengthX = median(footReferenceLengthX_R);
+foot_R.referenceLengthY = median(footReferenceLengthY_R);
+foot_R.referenceLengthZ = median(footReferenceLengthZ_R);
 foot_L.segmentLengthX = footLength_L;
 foot_R.segmentLengthX = footLength_R;
 foot_L.segmentLengthY = median(footSegmentLengthY_L);
@@ -464,7 +481,8 @@ foot_R.segmentLengthY = median(footSegmentLengthY_R);
 clear headSegmentLengthY torsoSegmentLengthY upperArmSegmentLengthY_L upperArmSegmentLengthY_R ...
     pelvisSegmentLengthZ pelvisReferenceLength lowerArmSegmentLengthY_L lowerArmSegmentLengthY_R ...
     thighSegmentLengthY_L thighSegmentLengthY_R shankSegmentLengthY_L shankSegmentLengthY_R ...
-    footReferenceLength_L footReferenceLength_R footSegmentLengthY_L footSegmentLengthY_R;
+    footReferenceLengthX_L footReferenceLengthY_L footReferenceLengthZ_L footReferenceLengthX_R ...
+    footReferenceLengthY_R footReferenceLengthZ_R footSegmentLengthY_L footSegmentLengthY_R;
 
 % Compute median of joint positions of all datasets
 joints.absolutePosition.LNJ = median(absolutePositionLNJ)';
@@ -472,6 +490,7 @@ joints.absolutePosition.SJ_L = median(absolutePositionSJ_L)';
 joints.absolutePosition.SJ_R = median(absolutePositionSJ_R)';
 joints.absolutePosition.EJ_L = median(absolutePositionEJ_L)';
 joints.absolutePosition.EJ_R = median(absolutePositionEJ_R)';
+joints.absolutePosition.ULJ = median(absolutePositionULJ)';
 joints.absolutePosition.LLJ = median(absolutePositionLLJ)';
 joints.absolutePosition.HJ_L = median(absolutePositionHJ_L)';
 joints.absolutePosition.HJ_R = median(absolutePositionHJ_R)';
@@ -558,6 +577,8 @@ clear headRelativePositionGLA headRelativePositionTRA_L headRelativePositionTRA_
     footRelativePositionMT5_R;
 
 % Estimate segment masses scaled by segment lengths according to [Dumas2007]
+footReferenceLength_L = sqrt(foot_L.referenceLengthX^2 + foot_L.referenceLengthY^2 + foot_L.referenceLengthZ^2);
+footReferenceLength_R = sqrt(foot_R.referenceLengthX^2 + foot_R.referenceLengthY^2 + foot_R.referenceLengthZ^2);
 if(strcmp(gender, 'female'))
     head.mass = 0.067 * bodyMass;
     upperArm_L.mass = 2 * 0.022 * bodyMass * upperArm_L.segmentLengthY / (upperArm_L.segmentLengthY + upperArm_R.segmentLengthY);
@@ -572,8 +593,8 @@ if(strcmp(gender, 'female'))
     thigh_R.mass = 2 * 0.146 * bodyMass * thigh_R.segmentLengthY / (thigh_L.segmentLengthY + thigh_R.segmentLengthY);
     shank_L.mass = 2 * 0.045 * bodyMass * shank_L.segmentLengthY / (shank_L.segmentLengthY + shank_R.segmentLengthY);
     shank_R.mass = 2 * 0.045 * bodyMass * shank_R.segmentLengthY / (shank_L.segmentLengthY + shank_R.segmentLengthY);
-    foot_L.mass = 2 * 0.01 * bodyMass * foot_L.referenceLength / (foot_L.referenceLength + foot_R.referenceLength);
-    foot_R.mass = 2 * 0.01 * bodyMass * foot_R.referenceLength / (foot_L.referenceLength + foot_R.referenceLength);
+    foot_L.mass = 2 * 0.01 * bodyMass * footReferenceLength_L / (footReferenceLength_L + footReferenceLength_R);
+    foot_R.mass = 2 * 0.01 * bodyMass * footReferenceLength_R / (footReferenceLength_L + footReferenceLength_R);
 else
     head.mass = 0.067 * bodyMass;
     upperArm_L.mass = 2 * 0.024 * bodyMass * upperArm_L.segmentLengthY / (upperArm_L.segmentLengthY + upperArm_R.segmentLengthY);
@@ -588,8 +609,10 @@ else
     thigh_R.mass = 2 * 0.123 * bodyMass * thigh_R.segmentLengthY / (thigh_L.segmentLengthY + thigh_R.segmentLengthY);
     shank_L.mass = 2 * 0.048 * bodyMass * shank_L.segmentLengthY / (shank_L.segmentLengthY + shank_R.segmentLengthY);
     shank_R.mass = 2 * 0.048 * bodyMass * shank_R.segmentLengthY / (shank_L.segmentLengthY + shank_R.segmentLengthY);
-    foot_L.mass = 2 * 0.012 * bodyMass * foot_L.referenceLength / (foot_L.referenceLength + foot_R.referenceLength);
-    foot_R.mass = 2 * 0.012 * bodyMass * foot_R.referenceLength / (foot_L.referenceLength + foot_R.referenceLength);
+    footReferenceLength_L = sqrt(foot_L.referenceLengthX^2 + foot_L.referenceLengthY^2 + foot_L.referenceLengthZ^2);
+    footReferenceLength_R = sqrt(foot_R.referenceLengthX^2 + foot_R.referenceLengthY^2 + foot_R.referenceLengthZ^2);
+    foot_L.mass = 2 * 0.012 * bodyMass * footReferenceLength_L / (footReferenceLength_L + footReferenceLength_R);
+    foot_R.mass = 2 * 0.012 * bodyMass * footReferenceLength_R / (footReferenceLength_L + footReferenceLength_R);
 end
 
 % Estimate center of mass (COM) coordinates according to [Dumas2007]
@@ -633,12 +656,12 @@ if(strcmp(gender, 'female'))
     shank_R.comX = -0.049 * shank_R.segmentLengthY;
     shank_R.comY = -0.404 * shank_R.segmentLengthY;
     shank_R.comZ = 0.031 * shank_R.segmentLengthY;
-    foot_L.comX = 0.443 * foot_L.referenceLength;
-    foot_L.comY = 0.044 * foot_L.referenceLength;
-    foot_L.comZ = 0.025 * foot_L.referenceLength;
-    foot_R.comX = 0.443 * foot_R.referenceLength;
-    foot_R.comY = 0.044 * foot_R.referenceLength;
-    foot_R.comZ = -0.025 * foot_R.referenceLength;
+    foot_L.comX = 0.443 * footReferenceLength_L;
+    foot_L.comY = 0.044 * footReferenceLength_L;
+    foot_L.comZ = 0.025 * footReferenceLength_L;
+    foot_R.comX = 0.443 * footReferenceLength_R;
+    foot_R.comY = 0.044 * footReferenceLength_R;
+    foot_R.comZ = -0.025 * footReferenceLength_R;
 else
     head.comX = -0.062 * head.segmentLengthY;
     head.comY = 0.555 * head.segmentLengthY;
@@ -679,12 +702,12 @@ else
     shank_R.comX = -0.048 * shank_R.segmentLengthY;
     shank_R.comY = -0.41 * shank_R.segmentLengthY;
     shank_R.comZ = 0.007 * shank_R.segmentLengthY;
-    foot_L.comX = 0.436 * foot_L.referenceLength;
-    foot_L.comY = -0.025 * foot_L.referenceLength;
-    foot_L.comZ = 0.007 * foot_L.referenceLength;
-    foot_R.comX = 0.436 * foot_R.referenceLength;
-    foot_R.comY = -0.025 * foot_R.referenceLength;
-    foot_R.comZ = -0.007 * foot_R.referenceLength;
+    foot_L.comX = 0.436 * footReferenceLength_L;
+    foot_L.comY = -0.025 * footReferenceLength_L;
+    foot_L.comZ = 0.007 * footReferenceLength_L;
+    foot_R.comX = 0.436 * footReferenceLength_R;
+    foot_R.comY = -0.025 * footReferenceLength_R;
+    foot_R.comZ = -0.007 * footReferenceLength_R;
 end
 
 % Estimate moments and products of inertia with respect to the center of
@@ -768,18 +791,18 @@ if(strcmp(gender, 'female'))
     shank_R.poiXY = (0.02 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
     shank_R.poiXZ = (0.01 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
     shank_R.poiYZ = (0.06 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
-    foot_L.moiXX = (0.12 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.moiYY = (0.25 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.moiZZ = (0.25 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.poiXY = -(0.07 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.poiXZ = -(0.05 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.poiYZ = (0.03 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_R.moiXX = (0.12 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.moiYY = (0.25 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.moiZZ = (0.25 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.poiXY = -(0.07 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.poiXZ = (0.05 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.poiYZ = -(0.03 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
+    foot_L.moiXX = (0.12 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.moiYY = (0.25 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.moiZZ = (0.25 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.poiXY = -(0.07 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.poiXZ = -(0.05 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.poiYZ = (0.03 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_R.moiXX = (0.12 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.moiYY = (0.25 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.moiZZ = (0.25 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.poiXY = -(0.07 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.poiXZ = (0.05 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.poiYZ = -(0.03 * footReferenceLength_R / 1000)^2 * foot_R.mass;
 else
     head.moiXX = (0.31 * head.segmentLengthY / 1000)^2 * head.mass;
     head.moiYY = (0.25 * head.segmentLengthY / 1000)^2 * head.mass;
@@ -859,19 +882,20 @@ else
     shank_R.poiXY = -(0.04 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
     shank_R.poiXZ = -(0.02 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
     shank_R.poiYZ = (0.05 * shank_R.segmentLengthY / 1000)^2 * shank_R.mass;
-    foot_L.moiXX = (0.11 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.moiYY = (0.25 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.moiZZ = (0.25 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.poiXY = (0.09 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
-    foot_L.poiXZ = (0.06 * foot_L.referenceLength / 1000)^2 * foot_L.mass;
+    foot_L.moiXX = (0.11 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.moiYY = (0.25 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.moiZZ = (0.25 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.poiXY = (0.09 * footReferenceLength_L / 1000)^2 * foot_L.mass;
+    foot_L.poiXZ = (0.06 * footReferenceLength_L / 1000)^2 * foot_L.mass;
     foot_L.poiYZ = 0;
-    foot_R.moiXX = (0.11 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.moiYY = (0.25 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.moiZZ = (0.25 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.poiXY = (0.09 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
-    foot_R.poiXZ = -(0.06 * foot_R.referenceLength / 1000)^2 * foot_R.mass;
+    foot_R.moiXX = (0.11 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.moiYY = (0.25 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.moiZZ = (0.25 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.poiXY = (0.09 * footReferenceLength_R / 1000)^2 * foot_R.mass;
+    foot_R.poiXZ = -(0.06 * footReferenceLength_R / 1000)^2 * foot_R.mass;
     foot_R.poiYZ = 0;
 end
+clear footReferenceLength_L footReferenceLength_R
 
 % Combine lower arm and hand segment by assuming the hand segment as a
 % point mass at the wrist marker (WRI)
@@ -885,5 +909,6 @@ lowerArm_L.mass = lowerArm_L.mass + hand_L.mass;
 lowerArm_R.mass = lowerArm_R.mass + hand_R.mass;
 clear hand_L hand_R;
 
+% Save processed data
 save(saveFile, 'subject', 'age', 'gender', 'origin', 'bodyHeight', 'bodyMass', 'equipmentMass', 'joints', 'head', 'torso', 'upperArm_L', 'upperArm_R', 'lowerArm_L', 'lowerArm_R', 'pelvis', 'thigh_L', 'thigh_R', 'shank_L', 'shank_R', 'foot_L', 'foot_R');
 fprintf('STATUS: Antropometric parameters were saved.\n');

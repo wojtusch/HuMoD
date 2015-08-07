@@ -553,7 +553,9 @@ for subjectIndex = 1:length(subjects)
             force.copZ = COPZ;
             events.copCorrection = correction;
         end
+        force = orderfields(force);
         variables.force = force;
+        events = orderfields(events);
         variables.events = events;
         save(file, '-struct', 'variables');
 

@@ -124,17 +124,17 @@ for subjectIndex = 1:length(subjects)
         if ~exist('motion.surfaceLabels', 'var')
             motion.surfaceLabels = {};
         end
-        if ~exist('motion.jointX', 'var')
-            motion.jointX = zeros(15, motion.frames);
+        if ~exist('motion.jointX.estimated', 'var')
+            motion.jointX.estimated = zeros(15, motion.frames);
         end
-        if ~exist('motion.jointY', 'var')
-            motion.jointY = zeros(15, motion.frames);
+        if ~exist('motion.jointY.estimated', 'var')
+            motion.jointY.estimated = zeros(15, motion.frames);
         end
-        if ~exist('motion.jointZ', 'var')
-            motion.jointZ = zeros(15, motion.frames);
+        if ~exist('motion.jointZ.estimated', 'var')
+            motion.jointZ.estimated = zeros(15, motion.frames);
         end
-        if ~exist('motion.jointLabels', 'var')
-            motion.jointLabels = {};
+        if ~exist('motion.jointLabels.estimated', 'var')
+            motion.jointLabels.estimated = {};
         end
         statusCounter = 0;
         for currentFrame = startFrame:endFrame
@@ -688,10 +688,26 @@ for subjectIndex = 1:length(subjects)
                 vectorTJ_L,...
                 vectorTJ_R...
             ];
-            motion.jointX(:, currentFrame) = jointData(1,:)';
-            motion.jointY(:, currentFrame) = jointData(2,:)';
-            motion.jointZ(:, currentFrame) = jointData(3,:)';
-            motion.jointLabels = {'LNJ', 'SJ_L', 'SJ_R', 'EJ_L', 'EJ_R', 'ULJ' 'LLJ', 'HJ_L', 'HJ_R', 'KJ_L', 'KJ_R', 'AJ_L', 'AJ_R', 'TJ_L', 'TJ_R'};
+            motion.estimatedJointCenterX(:, currentFrame) = jointData(1,:)';
+            motion.estimatedJointCenterY(:, currentFrame) = jointData(2,:)';
+            motion.estimatedJointCenterZ(:, currentFrame) = jointData(3,:)';
+            motion.estimatedJointCenterLabels = { ...
+                'LNJ', ...
+                'SJ_L', ...
+                'SJ_R', ...
+                'EJ_L', ...
+                'EJ_R', ...
+                'ULJ', ...
+                'LLJ', ...
+                'HJ_L', ...
+                'HJ_R', ...
+                'KJ_L', ...
+                'KJ_R', ...
+                'AJ_L', ...
+                'AJ_R', ...
+                'TJ_L', ...
+                'TJ_R' ...
+            };
             clear surfaceData jointData;
 
             % Print status
@@ -710,6 +726,7 @@ for subjectIndex = 1:length(subjects)
 
         % Save processed data
         fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
+        motion = orderfields(motion);
         variables.motion = motion;
         save(file, '-struct', 'variables');
         

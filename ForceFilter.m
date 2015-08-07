@@ -169,6 +169,7 @@ for subjectIndex = 1:length(subjects)
         force.grfZ = Fz;
         force.forceSensorZ1 = Fz1;
         force.forceSensorZ2 = Fz2;
+        force = orderfields(force);
         if exist(saveFile, 'file') == 2
             save(saveFile, 'force', '-append');
         else

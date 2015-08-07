@@ -76,6 +76,7 @@ for subjectIndex = 1:length(subjects)
 
         % Save processed data
         fprintf('STATUS: Saving dataset %s %s.\n', subject, dataset);
+        motion = orderfields(motion);
         variables.motion = motion;
         save(file, '-struct', 'variables');
 

@@ -9,7 +9,7 @@ Main features:
 * Synchronization and filtering of raw kinematic motion, ground reaction force and muscle activity data
 * Estinmation of anthropometric parameters
 * Estimation of joint center positions
-* Estimation of joint angle trajectories (not yet included)
+* Estimation of joint angle trajectories
 * Decomposition of ground reaction forces during double support phase
 * Detection of step events
 * Estimation of center of pressure trajectories

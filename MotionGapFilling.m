@@ -842,6 +842,7 @@ if handles.dataLoaded
         motion.markerY = squeeze(handles.data(:, 3, :));
         motion.markerZ = squeeze(handles.data(:, 1, :));
         motion.markerE = squeeze(handles.data(:, 4, :));
+        motion = orderfields(motion);
         if exist(saveFile, 'file') == 2
             save([path, filesep, '..', filesep, file, extention], 'motion', '-append');
         else

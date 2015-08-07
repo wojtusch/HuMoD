@@ -1,6 +1,6 @@
 % ------------------------------------------------------
 % This function returns the x, y and z coordinates of the given marker at
-% the spefified frame. It is required to have the corresponding motion data
+% the specified frame. It is required to have the corresponding motion data
 % variable in workspace.
 % ------------------------------------------------------
 % Technische Universität Darmstadt

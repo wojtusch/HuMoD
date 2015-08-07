@@ -193,6 +193,7 @@ for subjectIndex = 1:length(subjects)
         muscle.muscleLabels = muscleList;
         muscle.filterAlgorithm = filterAlgorithm;
         muscle.filteredActivities = processedData;
+        muscle = orderfields(muscle);
         if exist(saveFile, 'file') == 2
             save(saveFile, 'muscle', '-append');
         else

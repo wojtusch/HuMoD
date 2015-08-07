@@ -714,7 +714,9 @@ if handles.dataLoaded
 
     % Save processed data
     variables = handles.variables;
+    handles.events = orderfields(handles.events);
     variables.events = handles.events;
+    handles.force = orderfields(handles.force);
     variables.force = handles.force;
     save(handles.file, '-struct', 'variables');
 end
