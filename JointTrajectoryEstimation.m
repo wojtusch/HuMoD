@@ -218,7 +218,7 @@ for subjectIndex = 1:length(subjects)
 
         end
         dt = 1 / motion.frameRate;
-        kalmanProcessVariance = 50000.0;
+        kalmanProcessVariance = 20000.0;
         if(strcmp(subject, 'A'))
             kalmanMeasurementVariance = 0.5665^2;
         else
