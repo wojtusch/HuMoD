@@ -42,92 +42,11 @@ subjects = {
     'B'...
 };
 
-% Set constants
-JOINT_pBJX = 1;
-JOINT_pBJY = 2;
-JOINT_pBJZ = 3;
-JOINT_rBJX = 4;
-JOINT_rBJY = 5;
-JOINT_rBJZ = 6;
-JOINT_rLNJX = 7;
-JOINT_rLNJY = 8;
-JOINT_rLNJZ = 9;
-JOINT_rSJX_L = 10;
-JOINT_rSJY_L = 11;
-JOINT_rSJZ_L = 12;
-JOINT_rSJX_R = 13;
-JOINT_rSJY_R = 14;
-JOINT_rSJZ_R = 15;
-JOINT_rEJZ_L = 16;
-JOINT_rEJZ_R = 17;
-JOINT_rLLJX = 18;
-JOINT_rLLJY = 19;
-JOINT_rLLJZ = 20;
-JOINT_rHJX_L = 21;
-JOINT_rHJY_L = 22;
-JOINT_rHJZ_L = 23;
-JOINT_rHJX_R = 24;
-JOINT_rHJY_R = 25;
-JOINT_rHJZ_R = 26;
-JOINT_rKJZ_L = 27;
-JOINT_rKJZ_R = 28;
-JOINT_rAJX_L = 29;
-JOINT_rAJZ_L = 30;
-JOINT_rAJX_R = 31;
-JOINT_rAJZ_R = 32;
-JOINT_Total = JOINT_rAJZ_R;
-ELEMENT_TRA_L = 1;
-ELEMENT_TRA_R = 2;
-ELEMENT_GLA = 3;
-ELEMENT_ACR_L = 4;
-ELEMENT_ACR_R = 5;
-ELEMENT_LHC_L = 6;
-ELEMENT_LHC_R = 7;
-ELEMENT_WRI_L = 8;
-ELEMENT_WRI_R = 9;
-ELEMENT_SUP = 10;
-ELEMENT_C7 = 11;
-ELEMENT_T8 = 12;
-ELEMENT_T12 = 13;
-ELEMENT_ASIS_L = 14;
-ELEMENT_ASIS_R = 15;
-ELEMENT_PSIS_L = 16;
-ELEMENT_PSIS_R = 17;
-ELEMENT_PS = 18;
-ELEMENT_GTR_L = 19;
-ELEMENT_GTR_R = 20;
-ELEMENT_LFC_L = 21;
-ELEMENT_LFC_R = 22;
-ELEMENT_MFC_L = 23;
-ELEMENT_MFC_R = 24;
-ELEMENT_LM_L = 25;
-ELEMENT_LM_R = 26;
-ELEMENT_MM_L = 27;
-ELEMENT_MM_R = 28;
-ELEMENT_MT2_L = 29;
-ELEMENT_MT2_R = 30;
-ELEMENT_MT5_L = 31;
-ELEMENT_MT5_R = 32;
-ELEMENT_LNJ = 33;
-ELEMENT_SJ_L = 34;
-ELEMENT_SJ_R = 35;
-ELEMENT_EJ_L = 36;
-ELEMENT_EJ_R = 37;
-ELEMENT_LLJ = 38;
-ELEMENT_HJ_L = 39;
-ELEMENT_HJ_R = 40;
-ELEMENT_KJ_L = 41;
-ELEMENT_KJ_R = 42;
-ELEMENT_AJ_L = 43;
-ELEMENT_AJ_R = 44;
-ELEMENT_MarkerStart = ELEMENT_TRA_L;
-ELEMENT_MarkerEnd = ELEMENT_MT5_R;
-ELEMENT_JointStart = ELEMENT_LNJ;
-ELEMENT_JointEnd = ELEMENT_AJ_R;
-ELEMENT_Total = ELEMENT_AJ_R;
-
 % Add functions to search path
 addpath('Scripts');
+
+% Load constants
+setForwardKinematicsConstants;
 
 for subjectIndex = 1:length(subjects)
     
@@ -218,7 +137,7 @@ for subjectIndex = 1:length(subjects)
 
         end
         dt = 1 / motion.frameRate;
-        kalmanProcessVariance = 20000.0;
+        kalmanProcessVariance = 25000.0;
         if(strcmp(subject, 'A'))
             kalmanMeasurementVariance = 0.5665^2;
         else
@@ -237,6 +156,8 @@ for subjectIndex = 1:length(subjects)
         kalmanMeasurementVarianceWeights(ELEMENT_LM_R) = 0.5;
         kalmanMeasurementVarianceWeights(ELEMENT_MM_L) = 0.5;
         kalmanMeasurementVarianceWeights(ELEMENT_MM_R) = 0.5;
+        kalmanMeasurementVarianceWeights(ELEMENT_CAL_L) = 0.1;
+        kalmanMeasurementVarianceWeights(ELEMENT_CAL_R) = 0.1;
         kalmanMeasurementVarianceWeights(ELEMENT_MT2_L) = 0.1;
         kalmanMeasurementVarianceWeights(ELEMENT_MT2_R) = 0.1;
         kalmanMeasurementVarianceWeights(ELEMENT_MT5_L) = 0.1;
@@ -244,12 +165,14 @@ for subjectIndex = 1:length(subjects)
         kalmanMeasurementVarianceWeights = repmat(kalmanMeasurementVarianceWeights, 1, 3)';
         kalmanMeasurementVarianceWeights = diag(kalmanMeasurementVarianceWeights(:));
         kalmanProcessVarianceWeights = ones(JOINT_Total, 1);
-        kalmanProcessVarianceWeights(JOINT_rKJZ_L) = 10;
-        kalmanProcessVarianceWeights(JOINT_rKJZ_R) = 10;
-        kalmanProcessVarianceWeights(JOINT_rAJX_L) = 10;
-        kalmanProcessVarianceWeights(JOINT_rAJZ_L) = 10;
-        kalmanProcessVarianceWeights(JOINT_rAJX_R) = 10;
-        kalmanProcessVarianceWeights(JOINT_rAJZ_R) = 10;
+        kalmanProcessVarianceWeights(JOINT_rKJZ_L) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rKJZ_R) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJX_L) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJY_L) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJZ_L) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJX_R) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJY_R) = 3.0;
+        kalmanProcessVarianceWeights(JOINT_rAJZ_R) = 3.0;
         kalmanProcessVarianceWeights = repmat(kalmanProcessVarianceWeights, 1, factor)';
         kalmanProcessVarianceWeights = diag(kalmanProcessVarianceWeights(:));
         A = createProcessModel(n, dt, processModelType);
@@ -275,14 +198,10 @@ for subjectIndex = 1:length(subjects)
                 Z(:, (index - 1) * 3 + 1) = motion.markerX(index - ELEMENT_MarkerStart + 1, 1:T)';
                 Z(:, (index - 1) * 3 + 2) = motion.markerY(index - ELEMENT_MarkerStart + 1, 1:T)';
                 Z(:, (index - 1) * 3 + 3) = motion.markerZ(index - ELEMENT_MarkerStart + 1, 1:T)';
-            elseif (index > ELEMENT_WRI_R) && (index < ELEMENT_MT2_L)
+            elseif index > ELEMENT_WRI_R
                 Z(:, (index - 1) * 3 + 1) = motion.surfaceX(index - ELEMENT_MarkerStart - 1, 1:T)';
                 Z(:, (index - 1) * 3 + 2) = motion.surfaceY(index - ELEMENT_MarkerStart - 1, 1:T)';
                 Z(:, (index - 1) * 3 + 3) = motion.surfaceZ(index - ELEMENT_MarkerStart - 1, 1:T)';
-            elseif index >= ELEMENT_MT2_L
-                Z(:, (index - 1) * 3 + 1) = motion.surfaceX(index - ELEMENT_MarkerStart + 1, 1:T)';
-                Z(:, (index - 1) * 3 + 2) = motion.surfaceY(index - ELEMENT_MarkerStart + 1, 1:T)';
-                Z(:, (index - 1) * 3 + 3) = motion.surfaceZ(index - ELEMENT_MarkerStart + 1, 1:T)';
             end
             
         end
@@ -358,8 +277,10 @@ for subjectIndex = 1:length(subjects)
             'rKJZ_L', ...
             'rKJZ_R', ...
             'rAJX_L', ...
+            'rAJY_L', ...
             'rAJZ_L', ...
             'rAJX_R', ...
+            'rAJY_R', ...
             'rAJZ_R' ...
         };
         switch processModelType
@@ -439,14 +360,14 @@ for subjectIndex = 1:length(subjects)
                 'AJ_L', ...
                 'AJ_R' ...
         };
-        fprintf('STATUS: Computing corrected joint centers.\n');
+        fprintf('STATUS: Computing smoothed joint centers.\n');
         motion.jointX.smoothed = zeros((ELEMENT_JointEnd - ELEMENT_JointStart + 1), T);
         motion.jointY.smoothed = zeros((ELEMENT_JointEnd - ELEMENT_JointStart + 1), T);
         motion.jointZ.smoothed = zeros((ELEMENT_JointEnd - ELEMENT_JointStart + 1), T);
         statusCounter = 0;
         for currentFrame = 1:T
             
-            % Compute corrected joint centers
+            % Compute smoothed joint centers
             x = motion.trajectory.q(:, currentFrame);
             z = applyForwardKinematics(x, (n / factor), m, libraryName, 'constantPosition');
             for elementIndex = ELEMENT_JointStart:ELEMENT_JointEnd

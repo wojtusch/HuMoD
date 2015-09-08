@@ -16,6 +16,9 @@ close all;
 % Add functions to search path
 addpath('Scripts');
 
+% Load constants
+setForwardKinematicsConstants;
+
 % Set parameters
 startFrameNumber = 1;
 endFrameNumber = inf;
@@ -43,12 +46,48 @@ subjects = {
 };
 
 for subjectIndex = 1:length(subjects)
+    
+    % Load HuMoD library
+    libraryPath = [getPath, filesep, 'Library'];
+    libraryName = 'libHuMoD';
+    loadlibrary([libraryPath, filesep, 'build', filesep, libraryName, '.so'], [libraryPath, filesep, 'model.h']);
+
+    % Set parameters
+    subject = subjects{subjectIndex};
+
+    % Load model parameters
+    parametersFile = [getPath, filesep, 'Models', filesep, subject, filesep, 'Parameters.mat'];
+    if exist(parametersFile, 'file')
+        parameters = load(parametersFile);
+    else
+        fprintf('ERROR: No matching parameters file found!\n');
+        return;
+    end
+
+    % Set model parameters and create model
+    calllib(libraryName, 'createModel', ...
+        subject, ...
+        0, ...
+        createParameterVector('head', parameters), ...
+        createParameterVector('torso', parameters), ...
+        createParameterVector('pelvis', parameters), ...
+        createParameterVector('upperArm_L', parameters), ...
+        createParameterVector('upperArm_R', parameters), ...
+        createParameterVector('lowerArm_L', parameters), ...
+        createParameterVector('lowerArm_R', parameters), ...
+        createParameterVector('thigh_L', parameters), ...
+        createParameterVector('thigh_R', parameters), ...
+        createParameterVector('shank_L', parameters), ...
+        createParameterVector('shank_R', parameters), ...
+        createParameterVector('foot_L', parameters), ...
+        createParameterVector('foot_R', parameters) ...
+    );
+    
     for datasetIndex = 1:length(datasets)
 
         % Set parameters
         startFrame = startFrameNumber;
         endFrame = endFrameNumber;
-        subject = subjects{subjectIndex};
         dataset = datasets{datasetIndex};
         fprintf('STATUS: Processing dataset %s %s.\n', subject, dataset);
 
@@ -112,15 +151,33 @@ for subjectIndex = 1:length(subjects)
         title([dataset, ' ', name, ' - HuMoD Database']);
         for currentFrame = startFrame:endFrame
 
+            % Apply forward kinematics
+            jointPositions = motion.trajectory.q(:, currentFrame);
+            elementPositionsX = zeros(ELEMENT_Total, 1);
+            elementPositionsXPointer = libpointer('doublePtr', elementPositionsX);
+            elementPositionsY = zeros(ELEMENT_Total, 1);
+            elementPositionsYPointer = libpointer('doublePtr', elementPositionsY);
+            elementPositionsZ = zeros(ELEMENT_Total, 1);
+            elementPositionsZPointer = libpointer('doublePtr', elementPositionsZ);
+            calllib(libraryName, 'applyForwardKinematics', ...
+                jointPositions ...
+            );
+            calllib(libraryName, 'getForwardKinematicsPositions', ...
+                elementPositionsXPointer, ...
+                elementPositionsYPointer, ...
+                elementPositionsZPointer ...
+            );
+            elementPositionsX = elementPositionsXPointer.value;
+            elementPositionsY = elementPositionsYPointer.value;
+            elementPositionsZ = elementPositionsZPointer.value;
+            
             % Plot information text
             information = text(0, 0, 0, sprintf('Time %.2f s', (currentFrame / motion.frameRate)), 'Units', 'normalized');
 
-            % Plot measured markers
+            % Plot measured and smoothed markers
             markers = plot3d(motion.markerX(:, currentFrame), motion.markerY(:, currentFrame), motion.markerZ(:, currentFrame), 'r.');
             surface = plot3d(motion.surfaceX(:, currentFrame), motion.surfaceY(:, currentFrame), motion.surfaceZ(:, currentFrame), 'g.');
-            
-            % Plot estimated joints
-            estimatedJoints = plot3d(motion.jointX.estimated(:, currentFrame), motion.jointY.estimated(:, currentFrame), motion.jointZ.estimated(:, currentFrame), 'b.');
+            elements = plot3d(elementPositionsX, elementPositionsY, elementPositionsZ, 'c.');
             
             % Plot estimated connection lines
             estimatedHead = plot3d([motion.jointX.estimated(1, currentFrame), motion.surfaceX(1, currentFrame), motion.surfaceX(2, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.surfaceY(1, currentFrame), motion.surfaceY(2, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.surfaceZ(1, currentFrame), motion.surfaceZ(2, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'b');
@@ -130,9 +187,6 @@ for subjectIndex = 1:length(subjects)
             estimatedPelvis = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(8, currentFrame), motion.jointX.estimated(9, currentFrame), motion.jointX.estimated(7, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(8, currentFrame), motion.jointY.estimated(9, currentFrame), motion.jointY.estimated(7, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(8, currentFrame), motion.jointZ.estimated(9, currentFrame), motion.jointZ.estimated(7, currentFrame)], 'b');
             estimatedLeftLeg = plot3d([motion.jointX.estimated(14, currentFrame), motion.jointX.estimated(12, currentFrame), motion.jointX.estimated(10, currentFrame), motion.jointX.estimated(8, currentFrame)], [motion.jointY.estimated(14, currentFrame), motion.jointY.estimated(12, currentFrame), motion.jointY.estimated(10, currentFrame), motion.jointY.estimated(8, currentFrame)], [motion.jointZ.estimated(14, currentFrame), motion.jointZ.estimated(12, currentFrame), motion.jointZ.estimated(10, currentFrame), motion.jointZ.estimated(8, currentFrame)], 'b');
             estimatedRightLeg = plot3d([motion.jointX.estimated(15, currentFrame), motion.jointX.estimated(13, currentFrame), motion.jointX.estimated(11, currentFrame), motion.jointX.estimated(9, currentFrame)], [motion.jointY.estimated(15, currentFrame), motion.jointY.estimated(13, currentFrame), motion.jointY.estimated(11, currentFrame), motion.jointY.estimated(9, currentFrame)], [motion.jointZ.estimated(15, currentFrame), motion.jointZ.estimated(13, currentFrame), motion.jointZ.estimated(11, currentFrame), motion.jointZ.estimated(9, currentFrame)], 'b');
-
-            % Plot smoothed joints
-            smoothedJoints = plot3d(motion.jointX.smoothed(:, currentFrame), motion.jointY.smoothed(:, currentFrame), motion.jointZ.smoothed(:, currentFrame), 'c.');
             
             % Plot smoothed connection lines
             smoothedHead = plot3d([motion.jointX.smoothed(1, currentFrame), motion.surfaceX(1, currentFrame), motion.surfaceX(2, currentFrame), motion.jointX.smoothed(1, currentFrame)], [motion.jointY.smoothed(1, currentFrame), motion.surfaceY(1, currentFrame), motion.surfaceY(2, currentFrame), motion.jointY.smoothed(1, currentFrame)], [motion.jointZ.smoothed(1, currentFrame), motion.surfaceZ(1, currentFrame), motion.surfaceZ(2, currentFrame), motion.jointZ.smoothed(1, currentFrame)], 'c');
@@ -154,7 +208,7 @@ for subjectIndex = 1:length(subjects)
                 delete(information);
                 delete(markers);
                 delete(surface);
-                delete(estimatedJoints);
+                delete(elements);
                 delete(estimatedHead);
                 delete(estimatedLeftArm);
                 delete(estimatedRightArm);
@@ -162,7 +216,6 @@ for subjectIndex = 1:length(subjects)
                 delete(estimatedPelvis);
                 delete(estimatedLeftLeg);
                 delete(estimatedRightLeg);
-                delete(smoothedJoints);
                 delete(smoothedHead);
                 delete(smoothedLeftArm);
                 delete(smoothedRightArm);
@@ -177,4 +230,8 @@ for subjectIndex = 1:length(subjects)
         close all;
 
     end
+    
+    % Unload HuMod library
+    unloadlibrary(libraryName);
+    
 end
