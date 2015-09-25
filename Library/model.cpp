@@ -51,8 +51,10 @@ enum joints {
     JOINT_rKJZ_L,
     JOINT_rKJZ_R,
     JOINT_rAJX_L,
+    JOINT_rAJY_L,
     JOINT_rAJZ_L,
     JOINT_rAJX_R,
+    JOINT_rAJY_R,
     JOINT_rAJZ_R,
     JOINTS
 
@@ -87,6 +89,8 @@ enum elements {
     ELEMENT_LM_R,
     ELEMENT_MM_L,
     ELEMENT_MM_R,
+    ELEMENT_CAL_L,
+    ELEMENT_CAL_R,
     ELEMENT_MT2_L,
     ELEMENT_MT2_R,
     ELEMENT_MT5_L,
@@ -130,6 +134,7 @@ Segment* shankSegment_R = nullptr;
 Segment* footSegment_L = nullptr;
 Segment* footSegment_R = nullptr;
 
+// Global functions
 void createModel(char* subjectIdentifier, double* gravityValue, double* head, double* torso, double* pelvis, double* upperArm_L, double* upperArm_R, double* lowerArm_L, double* lowerArm_R, double* thigh_L, double* thigh_R, double* shank_L, double* shank_R, double* foot_L, double* foot_R) {
 
     // Initialize variables
@@ -516,8 +521,10 @@ void applyForwardKinematics(double* jointPositions) {
         mbs->getJointByName("rKJZ_L")->setJointPosition(jointPositions[JOINT_rKJZ_L]);
         mbs->getJointByName("rKJZ_R")->setJointPosition(jointPositions[JOINT_rKJZ_R]);
         mbs->getJointByName("rAJX_L")->setJointPosition(jointPositions[JOINT_rAJX_L]);
+        mbs->getJointByName("rAJY_L")->setJointPosition(jointPositions[JOINT_rAJY_L]);
         mbs->getJointByName("rAJZ_L")->setJointPosition(jointPositions[JOINT_rAJZ_L]);
         mbs->getJointByName("rAJX_R")->setJointPosition(jointPositions[JOINT_rAJX_R]);
+        mbs->getJointByName("rAJY_R")->setJointPosition(jointPositions[JOINT_rAJY_R]);
         mbs->getJointByName("rAJZ_R")->setJointPosition(jointPositions[JOINT_rAJZ_R]);
 
         // Start tape for derivatives
@@ -627,6 +634,12 @@ void getForwardKinematicsPositions(double* elementPositionsX, double* elementPos
         elementPositionsX[ELEMENT_MM_R] = mbs->getEndpointByName("MM_R")->getCoordinateFrame().r(0).getValue();
         elementPositionsY[ELEMENT_MM_R] = mbs->getEndpointByName("MM_R")->getCoordinateFrame().r(1).getValue();
         elementPositionsZ[ELEMENT_MM_R] = mbs->getEndpointByName("MM_R")->getCoordinateFrame().r(2).getValue();
+        elementPositionsX[ELEMENT_CAL_L] = mbs->getEndpointByName("CAL_L")->getCoordinateFrame().r(0).getValue();
+        elementPositionsY[ELEMENT_CAL_L] = mbs->getEndpointByName("CAL_L")->getCoordinateFrame().r(1).getValue();
+        elementPositionsZ[ELEMENT_CAL_L] = mbs->getEndpointByName("CAL_L")->getCoordinateFrame().r(2).getValue();
+        elementPositionsX[ELEMENT_CAL_R] = mbs->getEndpointByName("CAL_R")->getCoordinateFrame().r(0).getValue();
+        elementPositionsY[ELEMENT_CAL_R] = mbs->getEndpointByName("CAL_R")->getCoordinateFrame().r(1).getValue();
+        elementPositionsZ[ELEMENT_CAL_R] = mbs->getEndpointByName("CAL_R")->getCoordinateFrame().r(2).getValue();
         elementPositionsX[ELEMENT_MT2_L] = mbs->getEndpointByName("MT2_L")->getCoordinateFrame().r(0).getValue();
         elementPositionsY[ELEMENT_MT2_L] = mbs->getEndpointByName("MT2_L")->getCoordinateFrame().r(1).getValue();
         elementPositionsZ[ELEMENT_MT2_L] = mbs->getEndpointByName("MT2_L")->getCoordinateFrame().r(2).getValue();
@@ -938,6 +951,7 @@ void generateModelStructure(void) {
 
     // Add left ankle joint, foot segment and foot markers
     mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rAJX_L");
+    mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rAJY_L");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rAJZ_L");
     mbs->addFork();
     mbs->addFixedTranslation(mbslib::TVector3(footSegment_L->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONX], footSegment_L->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONY], footSegment_L->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONZ]));
@@ -997,6 +1011,7 @@ void generateModelStructure(void) {
 
     // Add right ankle joint, foot segment and foot markers
     mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rAJX_R");
+    mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rAJY_R");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rAJZ_R");
     mbs->addFork();
     mbs->addFixedTranslation(mbslib::TVector3(footSegment_R->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONX], footSegment_R->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONY], footSegment_R->relativePositionArray[SEGMENT_FOOT_CAL][SEGMENT_POSITIONZ]));
@@ -1046,8 +1061,10 @@ void generateModelStructure(void) {
     dom->addIndependent("rKJZ_L", "q");
     dom->addIndependent("rKJZ_R", "q");
     dom->addIndependent("rAJX_L", "q");
+    dom->addIndependent("rAJY_L", "q");
     dom->addIndependent("rAJZ_L", "q");
     dom->addIndependent("rAJX_R", "q");
+    dom->addIndependent("rAJY_R", "q");
     dom->addIndependent("rAJZ_R", "q");
 
     // Add dependent variables
@@ -1135,6 +1152,12 @@ void generateModelStructure(void) {
     dom->addDependent("MM_R", "rX");
     dom->addDependent("MM_R", "rY");
     dom->addDependent("MM_R", "rZ");
+    dom->addDependent("CAL_L", "rX");
+    dom->addDependent("CAL_L", "rY");
+    dom->addDependent("CAL_L", "rZ");
+    dom->addDependent("CAL_R", "rX");
+    dom->addDependent("CAL_R", "rY");
+    dom->addDependent("CAL_R", "rZ");
     dom->addDependent("MT2_L", "rX");
     dom->addDependent("MT2_L", "rY");
     dom->addDependent("MT2_L", "rZ");

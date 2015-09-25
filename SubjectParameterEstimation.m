@@ -1,9 +1,9 @@
 % ------------------------------------------------------
-% This script estimates subject parameters based on segment
-% lengths and on regression equations from [Dumas2007] in coordinate
-% systems according to [Wu2002], [Wu2005]. Lengths are given in
-% millimeters, masses are given in kilogram and moments of inertia are
-% given in kilogram * meters^2
+% This script estimates subject parameters based on segment lengths and on
+% regression equations from [Dumas2007] in reference systems according to
+% [Wu1995], [Wu2002], [Wu2005]. Lengths are given in millimeters, masses
+% are given in kilogram and moments of inertia are given in kilogram *
+% meters^2.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -254,10 +254,14 @@ for datasetIndex = 1:length(datasets)
     absolutePositionAJ_R(datasetIndex, :) = getAverageJoint('AJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame)';
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the head coordinate system for each dataset with approximating the
-    % y-axis direction by the normal of a plane containing the glabella
-    % (GLA) and tragion (TRA) markers pointing superior
-    yAxis = cross(getAverageVector('TRA_L', 'surface', 'TRA_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('TRA_L', 'surface', 'GLA', 'surface', initialStartFrame, initialEndFrame));
+    % in the head reference frame for each dataset derived from definitions
+    % in [Dumas2007]. The y-axis is assumed to be perpendicular to the
+    % plane containing the GLA, TRA_L and TRA_R markers pointing distal.
+    % The z-axis is perpendicular to the y-axis and the line connecting the
+    % lower neck joint and the GLA marker pointing right. The x-axis is the
+    % common line perpendicular to the y- and z-axis pointing anterior.
+    % Origin is the lower neck joint.
+    yAxis = cross(getAverageVector('GLA', 'surface', 'TRA_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('GLA', 'surface', 'TRA_R', 'surface', initialStartFrame, initialEndFrame));
     yAxis = yAxis / norm(yAxis);
     zAxis = cross(getAverageVector('LNJ', 'estimatedJoint', 'GLA', 'surface', initialStartFrame, initialEndFrame), yAxis);
     zAxis = zAxis / norm(zAxis);
@@ -270,7 +274,12 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the torso coordinate system for each dataset
+    % in the torso reference frame for each dataset based on definitions in
+    % [Dumas2007]. The y-axis is given by connecting the knee and ankle
+    % joints pointing superior. The z-axis is perpendicular to the y-axis
+    % and the line connecting the lower neck joint and the SUP marker
+    % pointing right. The x-axis is the common line perpendicular to the y-
+    % and z-axis pointing anterior. Origin is the lower neck joint.
     yAxis = getAverageVector('LLJ', 'estimatedJoint', 'LNJ', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
     zAxis = cross(getAverageVector('LNJ', 'estimatedJoint', 'SUP', 'surface', initialStartFrame, initialEndFrame), yAxis);
@@ -290,7 +299,13 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the left upper arm coordinate system for each dataset
+    % in the left and right upper arm reference frame for each dataset
+    % based on definitions in [Dumas2007], [Wu2005]. The y-axis is given by
+    % connecting the shoulder and elbow joints pointing proximal. The x-
+    % axis is perpendicular to the y-axis and the line connecting the elbow
+    % joint and the LHC marker pointing anterior.  The z-axis is the common
+    % line perpendicular to the x- and y-axis pointing right. Origin is the
+    % shoulder joint.
     yAxis = getAverageVector('EJ_L', 'estimatedJoint', 'SJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
@@ -300,10 +315,6 @@ for datasetIndex = 1:length(datasets)
     rotationMatrix = [xAxis, yAxis, zAxis];
     upperArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
     upperArmRelativePositionEJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('SJ_L', 'estimatedJoint', 'EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix;
-    
-    % Estimate average reference positions of adjacent markers and joints
-    % in the right upper arm coordinate system for each dataset
     yAxis = getAverageVector('EJ_R', 'estimatedJoint', 'SJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame), yAxis);
@@ -316,7 +327,13 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the left lower arm coordinate system for each dataset
+    % in the left and right lower arm reference frame for each dataset
+    % derived from definitions in [Dumas2007], [Wu2005]. The y-axis is
+    % given by connecting the WRI marker and the elbow joint pointing
+    % proximal. The x-axis is perpendicular to the y-axis and the line
+    % connecting the elbow joint and the LHC marker pointing anterior. The
+    % z-axis is the common line perpendicular to the x- and y-axis pointing
+    % right. Origin is the elbow joint.
     yAxis = getAverageVector('WRI_L', 'marker', 'EJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame), yAxis);
@@ -326,10 +343,6 @@ for datasetIndex = 1:length(datasets)
     rotationMatrix = [xAxis, yAxis, zAxis];
     lowerArmRelativePositionLHC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'estimatedJoint', 'LHC_L', 'surface', initialStartFrame, initialEndFrame))';
     lowerArmRelativePositionWRI_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('EJ_L', 'estimatedJoint', 'WRI_L', 'marker', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix;
-    
-    % Estimate average reference positions of adjacent markers and joints
-    % in the right lower arm coordinate system for each dataset
     yAxis = getAverageVector('WRI_R', 'marker', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
     yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('LHC_R', 'surface', 'EJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame), yAxis);
@@ -342,13 +355,19 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the pelvis coordinate system for each dataset
+    % in the pelvis reference frame for each dataset based on definitions
+    % in [Dumas2007], [Wu2002]. The z-axis is given by connecting the
+    % ASIS_L and ASIS_R markers pointing right. The x-axis is given by
+    % connecting the midpoint of the ASIS_L and ASIS_R markers with the
+    % midpoint of the PSIS_L and PSIS_R markers pointing anterior. The
+    % y-axis is the common line perpendicular to the x- and z-axis pointing
+    % superior. Origin is the lower lumbar joint.
     zAxis = getAverageVector('ASIS_L', 'surface', 'ASIS_R', 'surface', initialStartFrame, initialEndFrame);
     zAxis = zAxis / norm(zAxis);
-    yAxis = cross((getAverageVector('ASIS_L', 'surface', 'PSIS_L', 'surface', initialStartFrame, initialEndFrame) + getAverageVector('ASIS_L', 'surface', 'PSIS_R', 'surface', initialStartFrame, initialEndFrame)) / 2, zAxis);
-    yAxis = yAxis / norm(yAxis);
-    xAxis = cross(yAxis, zAxis);
+    xAxis = (getAverageMarker('ASIS_L', 'surface', initialStartFrame, initialEndFrame) + getAverageVector('ASIS_L', 'surface', 'ASIS_R', 'surface', initialStartFrame, initialEndFrame) / 2) - (getAverageMarker('PSIS_L', 'surface', initialStartFrame, initialEndFrame) + getAverageVector('PSIS_L', 'surface', 'PSIS_R', 'surface', initialStartFrame, initialEndFrame) / 2);
     xAxis = xAxis / norm(xAxis);
+    yAxis = cross(zAxis, xAxis);
+    yAxis = yAxis / norm(yAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
     pelvisRelativePositionASIS_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'ASIS_L', 'surface', initialStartFrame, initialEndFrame))';
     pelvisRelativePositionASIS_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('LLJ', 'estimatedJoint', 'ASIS_R', 'surface', initialStartFrame, initialEndFrame))';
@@ -360,11 +379,16 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the left thigh coordinate system for each dataset
-    yAxis = getAverageVector('KJ_L', 'estimatedJoint', 'HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
-    yAxis = yAxis / norm(yAxis);
+    % in the left and right thigh reference frame for each dataset based on
+    % definitions in [Dumas2007], [Wu2002]. The x-axis is perpendicular to
+    % the plane containing the hip joint and the MFC and LFC markers
+    % pointing anterior. The y-axis is given by connecting the hip and knee
+    % joints pointing proximal. The z-axis is the common line perpendicular
+    % to the x- and y-axis pointing right. Origin is the hip joint.
     xAxis = cross(getAverageVector('HJ_L', 'estimatedJoint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_L', 'estimatedJoint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
+    yAxis = getAverageVector('KJ_L', 'estimatedJoint', 'HJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    yAxis = yAxis / norm(yAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
@@ -372,14 +396,10 @@ for datasetIndex = 1:length(datasets)
     thighRelativePositionLFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'LFC_L', 'surface', initialStartFrame, initialEndFrame))';
     thighRelativePositionMFC_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'MFC_L', 'surface', initialStartFrame, initialEndFrame))';
     thighRelativePositionKJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('HJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix;
-    
-    % Estimate average reference positions of adjacent markers and joints
-    % in the right thigh coordinate system for each dataset
-    yAxis = getAverageVector('KJ_R', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
-    yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('HJ_R', 'estimatedJoint', 'LFC_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('HJ_R', 'estimatedJoint', 'MFC_R', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
+    yAxis = getAverageVector('KJ_R', 'estimatedJoint', 'HJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    yAxis = yAxis / norm(yAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
@@ -390,25 +410,27 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the left shank coordinate system for each dataset
-    yAxis = getAverageVector('AJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
-    yAxis = yAxis / norm(yAxis);
+    % in the left and right shank reference frame for each dataset derived
+    % from definitions in [Dumas2007], [Wu2002]. The x-axis is perpendicular
+    % to the plane containing the knee joint and the MM and LM markers
+    % pointing anterior. The y-axis is given by connecting the knee and
+    % ankle joints pointing proximal. The z-axis is the common line
+    % perpendicular to the x- and y-axis pointing right. Origin is the knee
+    % joint.
     xAxis = cross(getAverageVector('KJ_L', 'estimatedJoint', 'MM_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_L', 'estimatedJoint', 'LM_L', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
+    yAxis = getAverageVector('AJ_L', 'estimatedJoint', 'KJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    yAxis = yAxis / norm(yAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
     shankRelativePositionLM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'LM_L', 'surface', initialStartFrame, initialEndFrame))';
     shankRelativePositionMM_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'MM_L', 'surface', initialStartFrame, initialEndFrame))';
     shankRelativePositionAJ_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('KJ_L', 'estimatedJoint', 'AJ_L', 'estimatedJoint', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix;
-    
-    % Estimate average reference positions of adjacent markers and joints
-    % in the right shank coordinate system for each dataset
-    yAxis = getAverageVector('AJ_R', 'estimatedJoint', 'KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
-    yAxis = yAxis / norm(yAxis);
     xAxis = cross(getAverageVector('KJ_R', 'estimatedJoint', 'LM_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('KJ_R', 'estimatedJoint', 'MM_R', 'surface', initialStartFrame, initialEndFrame));
     xAxis = xAxis / norm(xAxis);
+    yAxis = getAverageVector('AJ_R', 'estimatedJoint', 'KJ_R', 'estimatedJoint', initialStartFrame, initialEndFrame);
+    yAxis = yAxis / norm(yAxis);
     zAxis = cross(xAxis, yAxis);
     zAxis = zAxis / norm(zAxis);
     rotationMatrix = [xAxis, yAxis, zAxis];
@@ -418,9 +440,13 @@ for datasetIndex = 1:length(datasets)
     clear xAxis yAxis zAxis rotationMatrix;
     
     % Estimate average reference positions of adjacent markers and joints
-    % in the left foot coordinate system for each dataset with estimating
-    % all required points from existing marker positions of the metatarsal
-    % head 2 (MT2) and metatarsal head 5 (MT5)
+    % in the left and right foot reference frame for each dataset based
+    % on definitions in [Dumas2007]. The x-axis is given by connecting the
+    % CAL marker with the estimated midpoint MT pointing anterior. The y-
+    % axis is perpendicular to the plantar aspect of the foot approximated
+    % by the plane containing the CAL, MT2 and MT5 markers pointing proximal.
+    % The z-axis is the common line perpendicular to the x- and y-axis
+    % pointing right. Origin is the ankle joint.
     xAxis = vectorMT_L - getAverageMarker('CAL_L', 'surface', initialStartFrame, initialEndFrame);
     xAxis = xAxis / norm(xAxis);
     yAxis = cross(getAverageVector('CAL_L', 'surface', 'MT2_L', 'surface', initialStartFrame, initialEndFrame), getAverageVector('CAL_L', 'surface', 'MT5_L', 'surface', initialStartFrame, initialEndFrame));
@@ -431,12 +457,6 @@ for datasetIndex = 1:length(datasets)
     footRelativePositionCAL_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'CAL_L', 'surface', initialStartFrame, initialEndFrame))';
     footRelativePositionMT2_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'MT2_L', 'surface', initialStartFrame, initialEndFrame))';
     footRelativePositionMT5_L(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_L', 'estimatedJoint', 'MT5_L', 'surface', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix vectorMT_L;
-    
-    % Estimate average reference positions of adjacent markers and joints
-    % in the right foot coordinate system for each dataset with estimating
-    % all required points from existing marker positions of the metatarsal
-    % head 2 (MT2) and metatarsal head 5 (MT5)
     xAxis = vectorMT_R - getAverageMarker('CAL_R', 'surface', initialStartFrame, initialEndFrame);
     xAxis = xAxis / norm(xAxis);
     yAxis = cross(getAverageVector('CAL_R', 'surface', 'MT5_R', 'surface', initialStartFrame, initialEndFrame), getAverageVector('CAL_R', 'surface', 'MT2_R', 'surface', initialStartFrame, initialEndFrame));
@@ -447,7 +467,7 @@ for datasetIndex = 1:length(datasets)
     footRelativePositionCAL_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'CAL_R', 'surface', initialStartFrame, initialEndFrame))';
     footRelativePositionMT2_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'MT2_R', 'surface', initialStartFrame, initialEndFrame))';
     footRelativePositionMT5_R(datasetIndex, :) = (rotationMatrix \ getAverageVector('AJ_R', 'estimatedJoint', 'MT5_R', 'surface', initialStartFrame, initialEndFrame))';
-    clear xAxis yAxis zAxis rotationMatrix vectorMT_R;
+    clear xAxis yAxis zAxis rotationMatrix;
     
     % Print status
     fprintf('STATUS: %i out of %i\n', datasetIndex, length(datasets));

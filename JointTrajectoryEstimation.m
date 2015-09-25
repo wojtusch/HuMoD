@@ -137,7 +137,7 @@ for subjectIndex = 1:length(subjects)
 
         end
         dt = 1 / motion.frameRate;
-        kalmanProcessVariance = 25000.0;
+        kalmanProcessVariance = 18000.0;
         if(strcmp(subject, 'A'))
             kalmanMeasurementVariance = 0.5665^2;
         else
@@ -225,12 +225,29 @@ for subjectIndex = 1:length(subjects)
         x0((JOINT_pBJX - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(1);
         x0((JOINT_pBJY - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(2);
         x0((JOINT_pBJZ - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(3);
+        if strcmp(subject, 'A')
+            x0((JOINT_rBJY - 1) * factor + 1) = -pi / 2;
+        end
         
         % Optimize initial values
         z = Z(1, :);
         g = @(x, p) applyForwardKinematics(x, n, m, libraryName, processModelType)';
         options = optimset('Display', 'off');
-        [x0, r, ~, e] = lsqcurvefit(g, x0, [], z, [], [], options);
+        lb = -pi / 2 * ones(n, 1);
+        ub = pi / 2 * ones(n, 1);
+        lb((1 - 1) * factor + 1) = -1500.0;
+        lb((2 - 1) * factor + 1) = -1500.0;
+        lb((3 - 1) * factor + 1) = -1500.0;
+        lb((4 - 1) * factor + 1) = -pi;
+        lb((5 - 1) * factor + 1) = -pi;
+        lb((6 - 1) * factor + 1) = -pi;
+        ub((1 - 1) * factor + 1) = 1500.0;
+        ub((2 - 1) * factor + 1) = 1500.0;
+        ub((3 - 1) * factor + 1) = 1500.0;
+        ub((4 - 1) * factor + 1) = pi;
+        ub((5 - 1) * factor + 1) = pi;
+        ub((6 - 1) * factor + 1) = pi;
+        [x0, r, ~, e] = lsqcurvefit(g, x0, [], z, lb, ub, options);
         if e <= 0
             
             % Unload HuMod library

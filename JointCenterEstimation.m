@@ -178,48 +178,51 @@ for subjectIndex = 1:length(subjects)
             vectorCAL_R_m = getMarker('CAL_R', 'marker', currentFrame);
 
             % Estimate marker coordinates shifted to skin surface
-            % Tragion (TRA)
+            % TRA markers
             vectorTRA_R_TRA_L = vectorTRA_L_m - vectorTRA_R_m;
             directionTRA = vectorTRA_R_TRA_L / norm(vectorTRA_R_TRA_L);
             vectorTRA_L_s = vectorTRA_L_m - markerOffset * directionTRA;
             vectorTRA_R_s = vectorTRA_R_m + markerOffset * directionTRA;
-            % Cervical spine 7 (C7) and suprasternale (SUP)
+            % GLA marker
+            vectorGLA_TRA = (vectorTRA_R_m + vectorTRA_R_TRA_L / 2) - vectorGLA_m;
+            directionGLA = vectorGLA_TRA / norm(vectorGLA_TRA);
+            vectorGLA_s = vectorGLA_m + markerOffset * directionGLA;
+            % C7 and SUP markers
             vectorC7_SUP = vectorSUP_m - vectorC7_m;
             directionC7_SUP = vectorC7_SUP / norm(vectorC7_SUP);
             vectorC7_s = vectorC7_m + markerOffset * directionC7_SUP;
             vectorSUP_s = vectorSUP_m - markerOffset * directionC7_SUP;
-            % Thoracic vertebra 12 (T12)
+            % T12 marker
             vectorT12_T8 = vectorT8_m - vectorT12_m;
             vectorACR_R_ACR_L = vectorACR_L_m - vectorACR_R_m;
             rotatedVector = rotateVector(vectorT12_T8 / norm(vectorT12_T8), (90 * pi / 180), vectorACR_R_ACR_L);
             directionT12 = rotatedVector / norm(rotatedVector);
             vectorT12_s = vectorT12_m + markerOffset * directionT12;
-            % Thoracic vertebra 8 (T8)
+            % T8 marker
             directionT8 = (directionC7_SUP + directionT12) / norm(directionC7_SUP + directionT12);
             vectorT8_s = vectorT8_m + markerOffset * directionT8;
-            % Acromion (ACR)
+            % ACR markers
             crossProduct = cross(vectorACR_R_ACR_L, vectorC7_SUP);
             directionACR = crossProduct / norm(crossProduct);
             vectorACR_L_s = vectorACR_L_m + markerOffset * directionACR;
             vectorACR_R_s = vectorACR_R_m + markerOffset * directionACR;
-            % Anterior-superior iliac spine (ASIS) and posterior-superior iliac
-            % spine (PSIS)
+            % ASIS and PSIS markers
             vectorASIS_PSIS = (vectorPSIS_R_m + (vectorPSIS_L_m - vectorPSIS_R_m) / 2) - (vectorASIS_R_m + (vectorASIS_L_m - vectorASIS_R_m) / 2);
             directionASIS_PSIS = vectorASIS_PSIS / norm(vectorASIS_PSIS);
             vectorASIS_L_s = vectorASIS_L_m + markerOffset * directionASIS_PSIS;
             vectorPSIS_L_s = vectorPSIS_L_m - markerOffset * directionASIS_PSIS;
             vectorASIS_R_s = vectorASIS_R_m + markerOffset * directionASIS_PSIS;
             vectorPSIS_R_s = vectorPSIS_R_m - markerOffset * directionASIS_PSIS;
-            % Pubic symphysis (PS)
+            % PS marker
             vectorPS_PSIS = (vectorPSIS_R_m + (vectorPSIS_L_m - vectorPSIS_R_m) / 2) - vectorPS_m;
             directionPS = vectorPS_PSIS / norm(vectorPS_PSIS);
             vectorPS_s = vectorPS_m + ((markerSize) / 2 + clothThickness) * directionPS;
-            % Greater trochanter (GTR)
+            % GTR markers
             vectorGTR_R_GTR_L = vectorGTR_L_m - vectorGTR_R_m;
             directionGTR = vectorGTR_R_GTR_L / norm(vectorGTR_R_GTR_L);
             vectorGTR_L_s = vectorGTR_L_m - markerOffset * directionGTR;
             vectorGTR_R_s = vectorGTR_R_m + markerOffset * directionGTR;
-            % Lateral fermoral condyle (LFC) and medial fermoral condyle (MFC)
+            % LFC and MFC markers
             vectorLFC_MFC = vectorMFC_L_m - vectorLFC_L_m;
             directionLFC_MFC = vectorLFC_MFC / norm(vectorLFC_MFC);
             vectorLFC_L_s = vectorLFC_L_m + markerOffset * directionLFC_MFC;
@@ -228,7 +231,7 @@ for subjectIndex = 1:length(subjects)
             directionLFC_MFC = vectorLFC_MFC / norm(vectorLFC_MFC);
             vectorLFC_R_s = vectorLFC_R_m + markerOffset * directionLFC_MFC;
             vectorMFC_R_s = vectorMFC_R_m - markerOffset * directionLFC_MFC;
-            % Lateral malleoius (LM) and medial malleoius (MM)
+            % LM and MM markers
             vectorLM_MM = vectorMM_L_m - vectorLM_L_m;
             directionLM_MM = vectorLM_MM / norm(vectorLM_MM);
             vectorLM_L_s = vectorLM_L_m + markerOffset * directionLM_MM;
@@ -237,14 +240,14 @@ for subjectIndex = 1:length(subjects)
             directionLM_MM = vectorLM_MM / norm(vectorLM_MM);
             vectorLM_R_s = vectorLM_R_m + markerOffset * directionLM_MM;
             vectorMM_R_s = vectorMM_R_m - markerOffset * directionLM_MM;
-            % Calcaneus (CAL)
+            % CAL markers
             vectorCAL_MT2 = vectorMT2_L_m - vectorCAL_L_m;
             directionCAL = vectorCAL_MT2 / norm(vectorCAL_MT2);
             vectorCAL_L_s = vectorCAL_L_m + markerOffset * directionCAL;
             vectorCAL_MT2 = vectorMT2_R_m - vectorCAL_R_m;
             directionCAL = vectorCAL_MT2 / norm(vectorCAL_MT2);
             vectorCAL_R_s = vectorCAL_R_m + markerOffset * directionCAL;
-            % Hallux (HAL), metatarsal head 2 (MT2) and metatarsal head 5 (MT5)
+            % HAL, MT2 and MT5  markers
             crossProduct = cross((vectorCAL_L_m - vectorMT5_L_m), (vectorMT5_L_m - vectorMT2_L_m));
             directionMT_HAL = crossProduct / norm(crossProduct);
             vectorMT2_L_s = vectorMT2_L_m + markerOffset * directionMT_HAL;
@@ -255,13 +258,13 @@ for subjectIndex = 1:length(subjects)
             vectorMT2_R_s = vectorMT2_R_m + markerOffset * directionMT_HAL;
             vectorMT5_R_s = vectorMT5_R_m + markerOffset * directionMT_HAL;
             vectorHAL_R_s = vectorHAL_R_m + markerOffset * directionMT_HAL;
-            clear vectorTRA_R_TRA_L vectorC7_SUP vectorT12_T8 vectorACR_R_ACR_L vectorASIS_PSIS ...
-                vectorLFC_MFC vectorGTR_R_GTR_L vectorLM_MM vectorCAL_MT2 directionTRA directionC7_SUP ...
-                directionT8 directionT12 directionACR directionASIS_PSIS directionPS directionGTR ...
-                directionLFC_MFC directionLM_MM directionCAL directionMT_HAL rotatedVector crossProduct;
+            clear vectorTRA_R_TRA_L vectorGLA_TRA vectorC7_SUP vectorT12_T8 vectorACR_R_ACR_L ...
+                vectorASIS_PSIS vectorLFC_MFC vectorGTR_R_GTR_L vectorLM_MM vectorCAL_MT2 ...
+                directionTRA directionGLA directionC7_SUP directionT8 directionT12 ...
+                directionACR directionASIS_PSIS directionPS directionGTR directionLFC_MFC ...
+                directionLM_MM directionCAL directionMT_HAL rotatedVector crossProduct;
 
-            %% Lower neck joint (LNJ)
-
+            % Lower neck joint (LNJ)
             % Estimate the lower neck joint LNJ (C7/T1) according to [Reed1999]
             % with using the connection of the ACR markers as rotation axis
             vectorC7_SUP = vectorSUP_s - vectorC7_s;
@@ -269,8 +272,7 @@ for subjectIndex = 1:length(subjects)
             vectorLNJ = vectorC7_s + rotateVector((0.55 * vectorC7_SUP), -(8 * pi / 180), vectorACR_R_ACR_L);
             clear vectorC7_SUP vectorACR_R_ACR_L;
 
-            %% Upper lumbar joint (ULJ)
-
+            % Upper lumbar joint (ULJ)
             % Estimate the upper lumbar joint ULJ (T12/L1) according to [Reed1999] with
             % using the connection of the ACR markers as rotation axis
             vectorC7_SUP = vectorSUP_s - vectorC7_s;
@@ -279,15 +281,7 @@ for subjectIndex = 1:length(subjects)
             vectorULJ = vectorT12_s + rotateVector((0.52 * norm(vectorC7_SUP) * vectorT12_T8 / norm(vectorT12_T8)), (94 * pi / 180), vectorACR_R_ACR_L);
             clear vectorC7_SUP vectorT12_T8 vectorACR_R_ACR_L;
 
-            % Estimate marker coordinates shifted to skin
-            % Glabella (GLA)
-            crossPrduct = cross((vectorULJ - vectorTRA_L_s), (vectorULJ - vectorTRA_R_s));
-            directionGLA = crossPrduct / norm(crossPrduct);
-            vectorGLA_s = vectorGLA_m + markerOffset * directionGLA;
-            clear crossPrduct directionGLA;
-
-            %% Shoulder joints (SJ_L, SJ_R)
-
+            % Shoulder joints (SJ_L, SJ_R)
             % Estimate the shoulder joints SJ_L and SJ_R according to [Reed1999]
             % with using the connection of the ACR markers as rotation axis
             vectorC7_SUP = vectorSUP_s - vectorC7_s;
@@ -297,6 +291,7 @@ for subjectIndex = 1:length(subjects)
             clear vectorC7_SUP vectorACR_R_ACR_L;
 
             % Estimate marker coordinates shifted to skin
+            % LHC markers
             vectorLHC_WRI = vectorWRI_L_m - vectorLHC_L_m;
             vectorLHC_SJ = vectorSJ_L - vectorLHC_L_m;
             crossProduct = cross(vectorLHC_WRI, vectorLHC_SJ);
@@ -307,8 +302,7 @@ for subjectIndex = 1:length(subjects)
             vectorLHC_R_s = vectorLHC_R_m + markerOffset * crossProduct / norm(crossProduct);
             clear crossProduct vectorLHC_WRI vectorLHC_SJ;
 
-            %% Elbow joints (EJ_L, EJ_R)
-
+            % Elbow joints (EJ_L, EJ_R)
             % Estimate the elbow joints EJ_L and EJ_R according to [Reed1999]
             vectorLHC_WRI = vectorWRI_L_m - vectorLHC_L_s;
             vectorLHC_SJ = vectorSJ_L - vectorLHC_L_s;
@@ -320,8 +314,7 @@ for subjectIndex = 1:length(subjects)
             vectorEJ_R = vectorLHC_R_s + 0.155 * norm(vectorLHC_WRI) * crossProduct / norm(crossProduct);
             clear crossProduct vectorLHC_WRI vectorLHC_SJ;
 
-            %% Lower lumbar joint (LLJ)
-
+            % Lower lumbar joint (LLJ)
             % Estimate the lower lumbar joint LLJ (L5/S1) according to [Reed1999]
             vectorASIS_R_ASIS_L = vectorASIS_L_s - vectorASIS_R_s;
             axisY = vectorASIS_R_ASIS_L / norm(vectorASIS_R_ASIS_L);
@@ -353,7 +346,7 @@ for subjectIndex = 1:length(subjects)
                 vectorPS_b vectorPSIS_L_b vectorPSIS_R_b vectorASIS_R_b_PS_b vectorASIS_R_b_ASIS_L_b ...
                 vectorCP_b axisX_s axisY axisZ_s axisX_b axisZ_b;
 
-            %% Hip joints (HJ_L, HJ_R)
+            % Hip joints (HJ_L, HJ_R)
             methodHipJoint = 'Harrington2007';
             switch methodHipJoint
 
@@ -526,8 +519,8 @@ for subjectIndex = 1:length(subjects)
 
             end
 
-            %% Knee joints (KJ_L, KJ_R)
-            methodKneeJoint = 'Dempster1955';
+            % Knee joints (KJ_L, KJ_R)
+            methodKneeJoint = 'Dumas2007';
             switch methodKneeJoint
 
                 case 'Reed1999'
@@ -543,9 +536,9 @@ for subjectIndex = 1:length(subjects)
                 vectorKJ_R = vectorLFC_R_s + (0.118 * norm(vectorLFC_LM) * crossProduct / norm(crossProduct));
                 clear crossProduct vectorLFC_L_LM_L vectorLFC_L_HJ_L vectorLFC_R_LM_R vectorLFC_R_HJ_R;
 
-                case 'Dempster1955'
-                % Estimate the knee joints KJ_L and KJ_R according to [Dempster1955],
-                % [Davis1991]
+                case 'Dumas2007'
+                % Estimate the knee joints KJ_L and KJ_R according to [Dumas2007],
+                % [Davis1991], [Dempster1955]
                 vectorMFC_LFC = vectorLFC_L_s - vectorMFC_L_s;
                 vectorKJ_L = vectorMFC_L_s + 0.5 * vectorMFC_LFC;
                 vectorMFC_LFC = vectorLFC_R_s - vectorMFC_R_s;
@@ -558,8 +551,8 @@ for subjectIndex = 1:length(subjects)
 
             end
 
-            %% Ankle joint (AJ_L, AJ_R)
-            methodAnkleJoint = 'Hicks1953';
+            % Ankle joint (AJ_L, AJ_R)
+            methodAnkleJoint = 'Dumas2007';
             switch methodAnkleJoint
 
                 case 'Reed1999'
@@ -575,8 +568,9 @@ for subjectIndex = 1:length(subjects)
                 vectorAJ_R = vectorLM_R_s + (0.085 * norm(vectorLFC_LM) * crossProduct / norm(crossProduct));
                 clear crossProduct vectorLFC_LM vectorLFC_HJ;
 
-                case 'Davis1991'
-                % Estimate the ankle joints AJ_L and AJ_R according to [Davis1991]
+                case 'Dumas2007'
+                % Estimate the ankle joints AJ_L and AJ_R according to [Dumas2007],
+                % [Davis1991]
                 vectorMM_LM = vectorLM_L_s - vectorMM_L_s;
                 vectorAJ_L = vectorMM_L_s + 0.5 * vectorMM_LM;
                 vectorMM_LM = vectorLM_R_s - vectorMM_R_s;
@@ -617,8 +611,7 @@ for subjectIndex = 1:length(subjects)
 
             end
 
-            %% Toe joints (TJ_L, TJ_R)
-
+            % Toe joints (TJ_L, TJ_R)
             % Estimate the toe joints TJ_L and TJ_R according to [Zatsiorsky1998]
             % with assuming the height of the joint center in the middle between ground
             % and MT2 defined by the foot plane given by CAL, MT2 and MT5
@@ -630,7 +623,7 @@ for subjectIndex = 1:length(subjects)
             vectorTJ_R = vectorMT2_R_s + distanceMT2_R_TJ_R * footNormal_R;
             clear footNormal_L footNormal_R crossProduct;
 
-            % Save shifted marker coordinates and joint data
+            % Save shifted marker coordinates and estimated joint data
             surfaceData = [
                 vectorTRA_L_s,...
                 vectorTRA_R_s,...
@@ -688,10 +681,10 @@ for subjectIndex = 1:length(subjects)
                 vectorTJ_L,...
                 vectorTJ_R...
             ];
-            motion.estimatedJointCenterX(:, currentFrame) = jointData(1,:)';
-            motion.estimatedJointCenterY(:, currentFrame) = jointData(2,:)';
-            motion.estimatedJointCenterZ(:, currentFrame) = jointData(3,:)';
-            motion.estimatedJointCenterLabels = { ...
+            motion.jointX.estimated(:, currentFrame) = jointData(1,:)';
+            motion.jointY.estimated(:, currentFrame) = jointData(2,:)';
+            motion.jointZ.estimated(:, currentFrame) = jointData(3,:)';
+            motion.jointLabels.estimated = { ...
                 'LNJ', ...
                 'SJ_L', ...
                 'SJ_R', ...
