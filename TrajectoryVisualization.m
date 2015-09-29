@@ -56,7 +56,7 @@ for subjectIndex = 1:length(subjects)
     subject = subjects{subjectIndex};
 
     % Load model parameters
-    parametersFile = [getPath, filesep, 'Models', filesep, subject, filesep, 'Parameters.mat'];
+    parametersFile = [getPath, filesep, subject, filesep, 'Parameters.mat'];
     if exist(parametersFile, 'file')
         parameters = load(parametersFile);
     else

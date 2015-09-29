@@ -65,7 +65,7 @@ for subjectIndex = 1:length(subjects)
 
         % Plot muscle data
         filterAlgorithm = muscle.filterAlgorithm;
-        if ~strcmpi(filterVariant, 'filtered') && ~isfield(muscle, 'activities.normalized')
+        if ~strcmpi(filterVariant, 'filtered') && ~isfield(muscle.activities, 'normalized')
             fprintf('ERROR: Dataset %s %s does not contain normalized activities.\n', subject, dataset);
             continue;
         else
