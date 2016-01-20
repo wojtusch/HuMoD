@@ -15,6 +15,7 @@ close all;
 
 % Set parameters
 plotNormalization = 1;
+savePath = [getPath, filesep, 'Normalization', filesep];
 datasets = {
     '1.1', ...
     '1.2', ...
