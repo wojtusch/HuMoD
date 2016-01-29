@@ -1,9 +1,9 @@
 % ------------------------------------------------------
 % This script estimates subject parameters based on segment lengths and on
-% regression equations from [Dumas2007] in reference systems according to
-% [Wu1995], [Wu2002], [Wu2005]. Lengths are given in millimeters, masses
-% are given in kilogram and moments of inertia are given in kilogram *
-% meters^2.
+% regression equations from [Dumas2007a], [Dumas2007b] in reference systems
+% according to [Wu1995], [Wu2002], [Wu2005]. Lengths are given in
+% millimeters, masses are given in kilogram and moments of inertia are
+% given in kilogram * meters^2.
 % ------------------------------------------------------
 % Technische Universität Darmstadt
 % Department of Computer Science
@@ -255,7 +255,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the head reference frame for each dataset derived from definitions
-    % in [Dumas2007]. The y-axis is assumed to be perpendicular to the
+    % in [Dumas2007a]. The y-axis is assumed to be perpendicular to the
     % plane containing the GLA, TRA_L and TRA_R markers pointing distal.
     % The z-axis is perpendicular to the y-axis and the line connecting the
     % lower neck joint and the GLA marker pointing right. The x-axis is the
@@ -275,7 +275,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the torso reference frame for each dataset based on definitions in
-    % [Dumas2007]. The y-axis is given by connecting the knee and ankle
+    % [Dumas2007a]. The y-axis is given by connecting the knee and ankle
     % joints pointing superior. The z-axis is perpendicular to the y-axis
     % and the line connecting the lower neck joint and the SUP marker
     % pointing right. The x-axis is the common line perpendicular to the y-
@@ -300,7 +300,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left and right upper arm reference frame for each dataset
-    % based on definitions in [Dumas2007], [Wu2005]. The y-axis is given by
+    % based on definitions in [Dumas2007a], [Wu2005]. The y-axis is given by
     % connecting the shoulder and elbow joints pointing proximal. The x-
     % axis is perpendicular to the y-axis and the line connecting the elbow
     % joint and the LHC marker pointing anterior.  The z-axis is the common
@@ -328,7 +328,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left and right lower arm reference frame for each dataset
-    % derived from definitions in [Dumas2007], [Wu2005]. The y-axis is
+    % derived from definitions in [Dumas2007a], [Wu2005]. The y-axis is
     % given by connecting the WRI marker and the elbow joint pointing
     % proximal. The x-axis is perpendicular to the y-axis and the line
     % connecting the elbow joint and the LHC marker pointing anterior. The
@@ -356,7 +356,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the pelvis reference frame for each dataset based on definitions
-    % in [Dumas2007], [Wu2002]. The z-axis is given by connecting the
+    % in [Dumas2007a], [Wu2002]. The z-axis is given by connecting the
     % ASIS_L and ASIS_R markers pointing right. The x-axis is given by
     % connecting the midpoint of the ASIS_L and ASIS_R markers with the
     % midpoint of the PSIS_L and PSIS_R markers pointing anterior. The
@@ -380,7 +380,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left and right thigh reference frame for each dataset based on
-    % definitions in [Dumas2007], [Wu2002]. The x-axis is perpendicular to
+    % definitions in [Dumas2007a], [Wu2002]. The x-axis is perpendicular to
     % the plane containing the hip joint and the MFC and LFC markers
     % pointing anterior. The y-axis is given by connecting the hip and knee
     % joints pointing proximal. The z-axis is the common line perpendicular
@@ -411,7 +411,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left and right shank reference frame for each dataset derived
-    % from definitions in [Dumas2007], [Wu2002]. The x-axis is perpendicular
+    % from definitions in [Dumas2007a], [Wu2002]. The x-axis is perpendicular
     % to the plane containing the knee joint and the MM and LM markers
     % pointing anterior. The y-axis is given by connecting the knee and
     % ankle joints pointing proximal. The z-axis is the common line
@@ -441,7 +441,7 @@ for datasetIndex = 1:length(datasets)
     
     % Estimate average reference positions of adjacent markers and joints
     % in the left and right foot reference frame for each dataset based
-    % on definitions in [Dumas2007]. The x-axis is given by connecting the
+    % on definitions in [Dumas2007a]. The x-axis is given by connecting the
     % CAL marker with the estimated midpoint MT pointing anterior. The y-
     % axis is perpendicular to the plantar aspect of the foot approximated
     % by the plane containing the CAL, MT2 and MT5 markers pointing proximal.
@@ -596,7 +596,8 @@ clear headRelativePositionGLA headRelativePositionTRA_L headRelativePositionTRA_
     footRelativePositionMT2_L footRelativePositionMT2_R footRelativePositionMT5_L ...
     footRelativePositionMT5_R;
 
-% Estimate segment masses scaled by segment lengths according to [Dumas2007]
+% Estimate segment masses scaled by segment lengths according to
+% [Dumas2007a], [Dumas2007b]
 footReferenceLength_L = sqrt(foot_L.referenceLengthX^2 + foot_L.referenceLengthY^2 + foot_L.referenceLengthZ^2);
 footReferenceLength_R = sqrt(foot_R.referenceLengthX^2 + foot_R.referenceLengthY^2 + foot_R.referenceLengthZ^2);
 if(strcmp(gender, 'female'))
@@ -635,11 +636,12 @@ else
     foot_R.mass = 2 * 0.012 * bodyMass * footReferenceLength_R / (footReferenceLength_L + footReferenceLength_R);
 end
 
-% Estimate center of mass (COM) coordinates according to [Dumas2007]
+% Estimate center of mass (COM) coordinates according to [Dumas2007a],
+% [Dumas2007b]
 if(strcmp(gender, 'female'))
-    head.comX = -0.07 * head.segmentLengthY;
-    head.comY = 0.597 * head.segmentLengthY;
-    head.comZ = 0;
+    head.comX = 0.016 * head.segmentLengthY;
+    head.comY = 0.575 * head.segmentLengthY;
+    head.comZ = 0.001 * head.segmentLengthY;
     upperArm_L.comX = -0.073 * upperArm_L.segmentLengthY;
     upperArm_L.comY = -0.454 * upperArm_L.segmentLengthY;
     upperArm_L.comZ = 0.028 * upperArm_L.segmentLengthY;
@@ -683,8 +685,8 @@ if(strcmp(gender, 'female'))
     foot_R.comY = 0.044 * footReferenceLength_R;
     foot_R.comZ = -0.025 * footReferenceLength_R;
 else
-    head.comX = -0.062 * head.segmentLengthY;
-    head.comY = 0.555 * head.segmentLengthY;
+    head.comX = 0.02 * head.segmentLengthY;
+    head.comY = 0.536 * head.segmentLengthY;
     head.comZ = 0.001 * head.segmentLengthY;
     upperArm_L.comX = 0.017 * upperArm_L.segmentLengthY;
     upperArm_L.comY = -0.452 * upperArm_L.segmentLengthY;
@@ -731,14 +733,14 @@ else
 end
 
 % Estimate moments and products of inertia with respect to the center of
-% mass according to [Dumas2007]
+% mass according to [Dumas2007a], [Dumas2007b]
 if(strcmp(gender, 'female'))
-    head.moiXX = (0.32 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.moiYY = (0.27 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.moiZZ = (0.34 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.poiXY = -(0.06 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiXX = (0.29 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiYY = (0.23 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiZZ = (0.30 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.poiXY = -(0.04 * head.segmentLengthY / 1000)^2 * head.mass;
     head.poiXZ = (0.01 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.poiYZ = -(0.01 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.poiYZ = 0;
     upperArm_L.moiXX = (0.33 * upperArm_L.segmentLengthY / 1000)^2 * upperArm_L.mass;
     upperArm_L.moiYY = (0.17 * upperArm_L.segmentLengthY / 1000)^2 * upperArm_L.mass;
     upperArm_L.moiZZ = (0.33 * upperArm_L.segmentLengthY / 1000)^2 * upperArm_L.mass;
@@ -824,10 +826,10 @@ if(strcmp(gender, 'female'))
     foot_R.poiXZ = (0.05 * footReferenceLength_R / 1000)^2 * foot_R.mass;
     foot_R.poiYZ = -(0.03 * footReferenceLength_R / 1000)^2 * foot_R.mass;
 else
-    head.moiXX = (0.31 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.moiYY = (0.25 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.moiZZ = (0.33 * head.segmentLengthY / 1000)^2 * head.mass;
-    head.poiXY = -(0.09 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiXX = (0.28 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiYY = (0.21 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.moiZZ = (0.30 * head.segmentLengthY / 1000)^2 * head.mass;
+    head.poiXY = -(0.07 * head.segmentLengthY / 1000)^2 * head.mass;
     head.poiXZ = -(0.02 * head.segmentLengthY / 1000)^2 * head.mass;
     head.poiYZ = (0.03 * head.segmentLengthY / 1000)^2 * head.mass;
     upperArm_L.moiXX = (0.31 * upperArm_L.segmentLengthY / 1000)^2 * upperArm_L.mass;

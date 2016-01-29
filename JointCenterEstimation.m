@@ -537,8 +537,8 @@ for subjectIndex = 1:length(subjects)
                 clear crossProduct vectorLFC_L_LM_L vectorLFC_L_HJ_L vectorLFC_R_LM_R vectorLFC_R_HJ_R;
 
                 case 'Dumas2007'
-                % Estimate the knee joints KJ_L and KJ_R according to [Dumas2007],
-                % [Davis1991], [Dempster1955]
+                % Estimate the knee joints KJ_L and KJ_R according to
+                % [Dumas2007a], [Davis1991], [Dempster1955]
                 vectorMFC_LFC = vectorLFC_L_s - vectorMFC_L_s;
                 vectorKJ_L = vectorMFC_L_s + 0.5 * vectorMFC_LFC;
                 vectorMFC_LFC = vectorLFC_R_s - vectorMFC_R_s;
@@ -569,8 +569,8 @@ for subjectIndex = 1:length(subjects)
                 clear crossProduct vectorLFC_LM vectorLFC_HJ;
 
                 case 'Dumas2007'
-                % Estimate the ankle joints AJ_L and AJ_R according to [Dumas2007],
-                % [Davis1991]
+                % Estimate the ankle joints AJ_L and AJ_R according to
+                % [Dumas2007a], [Davis1991]
                 vectorMM_LM = vectorLM_L_s - vectorMM_L_s;
                 vectorAJ_L = vectorMM_L_s + 0.5 * vectorMM_LM;
                 vectorMM_LM = vectorLM_R_s - vectorMM_R_s;
