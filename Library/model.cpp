@@ -39,8 +39,10 @@ enum joints {
     JOINT_rSJZ_R,
     JOINT_rEJZ_L,
     JOINT_rEJZ_R,
+    JOINT_rULJX,
+    JOINT_rULJY,
+    JOINT_rULJZ,
     JOINT_rLLJX,
-    JOINT_rLLJY,
     JOINT_rLLJZ,
     JOINT_rHJX_L,
     JOINT_rHJY_L,
@@ -100,6 +102,7 @@ enum elements {
     ELEMENT_SJ_R,
     ELEMENT_EJ_L,
     ELEMENT_EJ_R,
+    ELEMENT_ULJ,
     ELEMENT_LLJ,
     ELEMENT_HJ_L,
     ELEMENT_HJ_R,
@@ -121,7 +124,8 @@ mbslib::DeriveOMat* dom = nullptr;
 char const* subject = "A";
 mbslib::TScalar* gravity = nullptr;
 Segment* headSegment = nullptr;
-Segment* torsoSegment = nullptr;
+Segment* thoraxSegment = nullptr;
+Segment* abdomenSegment = nullptr;
 Segment* pelvisSegment = nullptr;
 Segment* upperArmSegment_L = nullptr;
 Segment* upperArmSegment_R = nullptr;
@@ -135,7 +139,7 @@ Segment* footSegment_L = nullptr;
 Segment* footSegment_R = nullptr;
 
 // Global functions
-void createModel(char* subjectIdentifier, double* gravityValue, double* head, double* torso, double* pelvis, double* upperArm_L, double* upperArm_R, double* lowerArm_L, double* lowerArm_R, double* thigh_L, double* thigh_R, double* shank_L, double* shank_R, double* foot_L, double* foot_R) {
+void createModel(char* subjectIdentifier, double* gravityValue, double* head, double* thorax, double* abdomen, double* pelvis, double* upperArm_L, double* upperArm_R, double* lowerArm_L, double* lowerArm_R, double* thigh_L, double* thigh_R, double* shank_L, double* shank_R, double* foot_L, double* foot_R) {
 
     // Initialize variables
     initializeVariables();
@@ -170,47 +174,62 @@ void createModel(char* subjectIdentifier, double* gravityValue, double* head, do
     headSegment->relativePositionArray[SEGMENT_HEAD_TRA_R][SEGMENT_POSITIONY] = head[(SEGMENT_HEAD_TRA_R * 3) + SEGMENT_OFFSET1];
     headSegment->relativePositionArray[SEGMENT_HEAD_TRA_R][SEGMENT_POSITIONZ] = head[(SEGMENT_HEAD_TRA_R * 3) + SEGMENT_OFFSET2];
 
-    // Set torso parameters
-    torsoSegment->lengthX = torso[SEGMENT_LENGTHX];
-    torsoSegment->lengthY = torso[SEGMENT_LENGTHY];
-    torsoSegment->lengthZ = torso[SEGMENT_LENGTHZ];
-    torsoSegment->mass = torso[SEGMENT_MASS];
-    torsoSegment->comX = torso[SEGMENT_COMX];
-    torsoSegment->comY = torso[SEGMENT_COMY];
-    torsoSegment->comZ = torso[SEGMENT_COMZ];
-    torsoSegment->moiXX = torso[SEGMENT_MOIXX];
-    torsoSegment->moiYY = torso[SEGMENT_MOIYY];
-    torsoSegment->moiZZ = torso[SEGMENT_MOIZZ];
-    torsoSegment->poiXY = torso[SEGMENT_POIXY];
-    torsoSegment->poiXZ = torso[SEGMENT_POIXZ];
-    torsoSegment->poiYZ = torso[SEGMENT_POIYZ];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_ACR_L * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_ACR_L * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_ACR_L * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_ACR_R * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_ACR_R * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_ACR_R * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_SUP * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_SUP * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_SUP * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_C7 * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_C7 * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_C7 * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_T8 * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_T8 * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_T8 * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_T12 * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_T12 * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_T12 * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_SJ_L * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_SJ_L * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_SJ_L * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_SJ_R * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_SJ_R * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_SJ_R * 3) + SEGMENT_OFFSET2];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_LLJ][SEGMENT_POSITIONX] = torso[(SEGMENT_TORSO_LLJ * 3) + SEGMENT_OFFSET0];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_LLJ][SEGMENT_POSITIONY] = torso[(SEGMENT_TORSO_LLJ * 3) + SEGMENT_OFFSET1];
-    torsoSegment->relativePositionArray[SEGMENT_TORSO_LLJ][SEGMENT_POSITIONZ] = torso[(SEGMENT_TORSO_LLJ * 3) + SEGMENT_OFFSET2];
+    // Set thorax parameters
+    thoraxSegment->lengthX = thorax[SEGMENT_LENGTHX];
+    thoraxSegment->lengthY = thorax[SEGMENT_LENGTHY];
+    thoraxSegment->lengthZ = thorax[SEGMENT_LENGTHZ];
+    thoraxSegment->mass = thorax[SEGMENT_MASS];
+    thoraxSegment->comX = thorax[SEGMENT_COMX];
+    thoraxSegment->comY = thorax[SEGMENT_COMY];
+    thoraxSegment->comZ = thorax[SEGMENT_COMZ];
+    thoraxSegment->moiXX = thorax[SEGMENT_MOIXX];
+    thoraxSegment->moiYY = thorax[SEGMENT_MOIYY];
+    thoraxSegment->moiZZ = thorax[SEGMENT_MOIZZ];
+    thoraxSegment->poiXY = thorax[SEGMENT_POIXY];
+    thoraxSegment->poiXZ = thorax[SEGMENT_POIXZ];
+    thoraxSegment->poiYZ = thorax[SEGMENT_POIYZ];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_ACR_L * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_ACR_L * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_ACR_L * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_ACR_R * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_ACR_R * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_ACR_R * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_SUP * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_SUP * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_SUP * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_C7 * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_C7 * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_C7 * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_T8 * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_T8 * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_T8 * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_SJ_L * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_SJ_L * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_SJ_L * 3) + SEGMENT_OFFSET2];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONX] = thorax[(SEGMENT_THORAX_SJ_R * 3) + SEGMENT_OFFSET0];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONY] = thorax[(SEGMENT_THORAX_SJ_R * 3) + SEGMENT_OFFSET1];
+    thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONZ] = thorax[(SEGMENT_THORAX_SJ_R * 3) + SEGMENT_OFFSET2];
+
+    // Set abdomen parameters
+    abdomenSegment->lengthX = abdomen[SEGMENT_LENGTHX];
+    abdomenSegment->lengthY = abdomen[SEGMENT_LENGTHY];
+    abdomenSegment->lengthZ = abdomen[SEGMENT_LENGTHZ];
+    abdomenSegment->mass = abdomen[SEGMENT_MASS];
+    abdomenSegment->comX = abdomen[SEGMENT_COMX];
+    abdomenSegment->comY = abdomen[SEGMENT_COMY];
+    abdomenSegment->comZ = abdomen[SEGMENT_COMZ];
+    abdomenSegment->moiXX = abdomen[SEGMENT_MOIXX];
+    abdomenSegment->moiYY = abdomen[SEGMENT_MOIYY];
+    abdomenSegment->moiZZ = abdomen[SEGMENT_MOIZZ];
+    abdomenSegment->poiXY = abdomen[SEGMENT_POIXY];
+    abdomenSegment->poiXZ = abdomen[SEGMENT_POIXZ];
+    abdomenSegment->poiYZ = abdomen[SEGMENT_POIYZ];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONX] = abdomen[(SEGMENT_ABDOMEN_T12 * 3) + SEGMENT_OFFSET0];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONY] = abdomen[(SEGMENT_ABDOMEN_T12 * 3) + SEGMENT_OFFSET1];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONZ] = abdomen[(SEGMENT_ABDOMEN_T12 * 3) + SEGMENT_OFFSET2];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_LLJ][SEGMENT_POSITIONX] = abdomen[(SEGMENT_ABDOMEN_LLJ * 3) + SEGMENT_OFFSET0];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_LLJ][SEGMENT_POSITIONY] = abdomen[(SEGMENT_ABDOMEN_LLJ * 3) + SEGMENT_OFFSET1];
+    abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_LLJ][SEGMENT_POSITIONZ] = abdomen[(SEGMENT_ABDOMEN_LLJ * 3) + SEGMENT_OFFSET2];
 
     // Set pelvis parameters
     pelvisSegment->lengthX = pelvis[SEGMENT_LENGTHX];
@@ -509,8 +528,10 @@ void applyForwardKinematics(double* jointPositions) {
         mbs->getJointByName("rSJZ_R")->setJointPosition(jointPositions[JOINT_rSJZ_R]);
         mbs->getJointByName("rEJZ_L")->setJointPosition(jointPositions[JOINT_rEJZ_L]);
         mbs->getJointByName("rEJZ_R")->setJointPosition(jointPositions[JOINT_rEJZ_R]);
+        mbs->getJointByName("rULJX")->setJointPosition(jointPositions[JOINT_rULJX]);
+        mbs->getJointByName("rULJY")->setJointPosition(jointPositions[JOINT_rULJY]);
+        mbs->getJointByName("rULJZ")->setJointPosition(jointPositions[JOINT_rULJZ]);
         mbs->getJointByName("rLLJX")->setJointPosition(jointPositions[JOINT_rLLJX]);
-        mbs->getJointByName("rLLJY")->setJointPosition(jointPositions[JOINT_rLLJY]);
         mbs->getJointByName("rLLJZ")->setJointPosition(jointPositions[JOINT_rLLJZ]);
         mbs->getJointByName("rHJX_L")->setJointPosition(jointPositions[JOINT_rHJX_L]);
         mbs->getJointByName("rHJY_L")->setJointPosition(jointPositions[JOINT_rHJY_L]);
@@ -667,6 +688,9 @@ void getForwardKinematicsPositions(double* elementPositionsX, double* elementPos
         elementPositionsX[ELEMENT_EJ_R] = mbs->getJointByName("rEJZ_R")->getCoordinateFrame().r(0).getValue();
         elementPositionsY[ELEMENT_EJ_R] = mbs->getJointByName("rEJZ_R")->getCoordinateFrame().r(1).getValue();
         elementPositionsZ[ELEMENT_EJ_R] = mbs->getJointByName("rEJZ_R")->getCoordinateFrame().r(2).getValue();
+        elementPositionsX[ELEMENT_ULJ] = mbs->getJointByName("rULJX")->getCoordinateFrame().r(0).getValue();
+        elementPositionsY[ELEMENT_ULJ] = mbs->getJointByName("rULJX")->getCoordinateFrame().r(1).getValue();
+        elementPositionsZ[ELEMENT_ULJ] = mbs->getJointByName("rULJX")->getCoordinateFrame().r(2).getValue();
         elementPositionsX[ELEMENT_LLJ] = mbs->getJointByName("rLLJX")->getCoordinateFrame().r(0).getValue();
         elementPositionsY[ELEMENT_LLJ] = mbs->getJointByName("rLLJX")->getCoordinateFrame().r(1).getValue();
         elementPositionsZ[ELEMENT_LLJ] = mbs->getJointByName("rLLJX")->getCoordinateFrame().r(2).getValue();
@@ -734,7 +758,8 @@ void initializeVariables(void) {
     dom = new mbslib::DeriveOMat(*mbs);
     gravity = new mbslib::TScalar();
     headSegment = new Segment("Head", 3);
-    torsoSegment = new Segment("Torso", 9);
+    thoraxSegment = new Segment("Thorax", 7);
+    abdomenSegment = new Segment("Abdomen", 2);
     pelvisSegment = new Segment("Pelvis", 7);
     upperArmSegment_L = new Segment("Left upper arm", 2);
     upperArmSegment_R = new Segment("Right upper arm", 2);
@@ -770,35 +795,46 @@ void generateModelStructure(void) {
     // Upper body
     // ++++++++++
 
-    // Add lower lumbar joints, torso segment and torso markers
+    // Add lower lumbar joints, abdomen segment and abdomen marker
     mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rLLJX");
-    mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rLLJY");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rLLJZ");
     mbs->addRigidLink(
-        mbslib::TVector3(0, torsoSegment->lengthY, 0),
-        mbslib::TVector3(torsoSegment->comX, torsoSegment->comY, torsoSegment->comZ),
-        torsoSegment->mass,
-        mbslib::makeInertiaTensor(torsoSegment->moiXX, torsoSegment->moiYY, torsoSegment->moiZZ, torsoSegment->poiXY, torsoSegment->poiXZ, torsoSegment->poiYZ),
-        "Torso"
+        mbslib::TVector3(0, abdomenSegment->lengthY, 0),
+        mbslib::TVector3(abdomenSegment->comX, abdomenSegment->comY, abdomenSegment->comZ),
+        abdomenSegment->mass,
+        mbslib::makeInertiaTensor(abdomenSegment->moiXX, abdomenSegment->moiYY, abdomenSegment->moiZZ, abdomenSegment->poiXY, abdomenSegment->poiXZ, abdomenSegment->poiYZ),
+        "Abdomen"
     );
     mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_L][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONX], abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONY], abdomenSegment->relativePositionArray[SEGMENT_ABDOMEN_T12][SEGMENT_POSITIONZ]));
+    mbs->addEndpoint("T12");
+
+    // Add upper lumbar joints, thorax segment and thorax markers
+    mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rULJX");
+    mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rULJY");
+    mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rULJZ");
+    mbs->addRigidLink(
+        mbslib::TVector3(0, thoraxSegment->lengthY, 0),
+        mbslib::TVector3(thoraxSegment->comX, thoraxSegment->comY, thoraxSegment->comZ),
+        thoraxSegment->mass,
+        mbslib::makeInertiaTensor(thoraxSegment->moiXX, thoraxSegment->moiYY, thoraxSegment->moiZZ, thoraxSegment->poiXY, thoraxSegment->poiXZ, thoraxSegment->poiYZ),
+        "Thorax"
+    );
+    mbs->addFork();
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_L][SEGMENT_POSITIONZ]));
     mbs->addEndpoint("ACR_L");
     mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_ACR_R][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_ACR_R][SEGMENT_POSITIONZ]));
     mbs->addEndpoint("ACR_R");
     mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_SUP][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SUP][SEGMENT_POSITIONZ]));
     mbs->addEndpoint("SUP");
     mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_C7][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_C7][SEGMENT_POSITIONZ]));
     mbs->addEndpoint("C7");
     mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_T8][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_T8][SEGMENT_POSITIONZ]));
     mbs->addEndpoint("T8");
-    mbs->addFork();
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_T12][SEGMENT_POSITIONZ]));
-    mbs->addEndpoint("T12");
 
     // Split head and arms
     mbs->addFork();
@@ -827,7 +863,7 @@ void generateModelStructure(void) {
     mbs->addEndpoint("VTX");
 
     // Add left shoulder joints, upper arm segment and upper arm markers
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_L][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_L][SEGMENT_POSITIONZ]));
     mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rSJX_L");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rSJY_L");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rSJZ_L");
@@ -854,7 +890,7 @@ void generateModelStructure(void) {
     mbs->addEndpoint("WRI_L");
 
     // Add right shoulder joints, upper arm segment and upper arm markers
-    mbs->addFixedTranslation(mbslib::TVector3(torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONX], torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONY], torsoSegment->relativePositionArray[SEGMENT_TORSO_SJ_R][SEGMENT_POSITIONZ]));
+    mbs->addFixedTranslation(mbslib::TVector3(thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONX], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONY], thoraxSegment->relativePositionArray[SEGMENT_THORAX_SJ_R][SEGMENT_POSITIONZ]));
     mbs->addRevoluteJoint(mbslib::TVector3(1, 0, 0), "rSJX_R");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 1, 0), "rSJY_R");
     mbs->addRevoluteJoint(mbslib::TVector3(0, 0, 1), "rSJZ_R");
@@ -1049,8 +1085,10 @@ void generateModelStructure(void) {
     dom->addIndependent("rSJZ_R", "q");
     dom->addIndependent("rEJZ_L", "q");
     dom->addIndependent("rEJZ_R", "q");
+    dom->addIndependent("rULJX", "q");
+    dom->addIndependent("rULJY", "q");
+    dom->addIndependent("rULJZ", "q");
     dom->addIndependent("rLLJX", "q");
-    dom->addIndependent("rLLJY", "q");
     dom->addIndependent("rLLJZ", "q");
     dom->addIndependent("rHJX_L", "q");
     dom->addIndependent("rHJY_L", "q");
@@ -1185,6 +1223,9 @@ void generateModelStructure(void) {
     dom->addDependent("rEJZ_R", "rX");
     dom->addDependent("rEJZ_R", "rY");
     dom->addDependent("rEJZ_R", "rZ");
+    dom->addDependent("rULJX", "rX");
+    dom->addDependent("rULJX", "rY");
+    dom->addDependent("rULJX", "rZ");
     dom->addDependent("rLLJX", "rX");
     dom->addDependent("rLLJX", "rY");
     dom->addDependent("rLLJX", "rZ");

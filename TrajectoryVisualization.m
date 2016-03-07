@@ -4,7 +4,7 @@
 % Technische Universität Darmstadt
 % Department of Computer Science
 % Simulation, Systems Optimization and Robotics Group
-% Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2015
+% Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2016
 % Licensed under BSD 3-Clause License
 % ------------------------------------------------------
 
@@ -69,7 +69,8 @@ for subjectIndex = 1:length(subjects)
         subject, ...
         0, ...
         createParameterVector('head', parameters), ...
-        createParameterVector('torso', parameters), ...
+        createParameterVector('thorax', parameters), ...
+        createParameterVector('abdomen', parameters), ...
         createParameterVector('pelvis', parameters), ...
         createParameterVector('upperArm_L', parameters), ...
         createParameterVector('upperArm_R', parameters), ...
@@ -183,7 +184,8 @@ for subjectIndex = 1:length(subjects)
             estimatedHead = plot3d([motion.jointX.estimated(1, currentFrame), motion.surfaceX(1, currentFrame), motion.surfaceX(2, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.surfaceY(1, currentFrame), motion.surfaceY(2, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.surfaceZ(1, currentFrame), motion.surfaceZ(2, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'b');
             estimatedLeftArm = plot3d([motion.jointX.estimated(1, currentFrame), motion.jointX.estimated(2, currentFrame), motion.jointX.estimated(4, currentFrame), motion.markerX(8, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.jointY.estimated(2, currentFrame), motion.jointY.estimated(4, currentFrame), motion.markerY(8, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.jointZ.estimated(2, currentFrame), motion.jointZ.estimated(4, currentFrame), motion.markerZ(8, currentFrame)], 'b');
             estimatedRightArm = plot3d([motion.jointX.estimated(1, currentFrame), motion.jointX.estimated(3, currentFrame), motion.jointX.estimated(5, currentFrame), motion.markerX(9, currentFrame)], [motion.jointY.estimated(1, currentFrame), motion.jointY.estimated(3, currentFrame), motion.jointY.estimated(5, currentFrame), motion.markerY(9, currentFrame)], [motion.jointZ.estimated(1, currentFrame), motion.jointZ.estimated(3, currentFrame), motion.jointZ.estimated(5, currentFrame), motion.markerZ(9, currentFrame)], 'b');
-            estimatedSpinal = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(6, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(6, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(6, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'b');
+            estimatedThorax = plot3d([motion.jointX.estimated(6, currentFrame), motion.jointX.estimated(1, currentFrame)], [motion.jointY.estimated(6, currentFrame), motion.jointY.estimated(1, currentFrame)], [motion.jointZ.estimated(6, currentFrame), motion.jointZ.estimated(1, currentFrame)], 'b');
+            estimatedAbdomen = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(6, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(6, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(6, currentFrame)], 'b');
             estimatedPelvis = plot3d([motion.jointX.estimated(7, currentFrame), motion.jointX.estimated(8, currentFrame), motion.jointX.estimated(9, currentFrame), motion.jointX.estimated(7, currentFrame)], [motion.jointY.estimated(7, currentFrame), motion.jointY.estimated(8, currentFrame), motion.jointY.estimated(9, currentFrame), motion.jointY.estimated(7, currentFrame)], [motion.jointZ.estimated(7, currentFrame), motion.jointZ.estimated(8, currentFrame), motion.jointZ.estimated(9, currentFrame), motion.jointZ.estimated(7, currentFrame)], 'b');
             estimatedLeftLeg = plot3d([motion.surfaceX(29, currentFrame), motion.jointX.estimated(12, currentFrame), motion.jointX.estimated(10, currentFrame), motion.jointX.estimated(8, currentFrame)], [motion.surfaceY(29, currentFrame), motion.jointY.estimated(12, currentFrame), motion.jointY.estimated(10, currentFrame), motion.jointY.estimated(8, currentFrame)], [motion.surfaceZ(29, currentFrame), motion.jointZ.estimated(12, currentFrame), motion.jointZ.estimated(10, currentFrame), motion.jointZ.estimated(8, currentFrame)], 'b');
             estimatedRightLeg = plot3d([motion.surfaceX(30, currentFrame), motion.jointX.estimated(13, currentFrame), motion.jointX.estimated(11, currentFrame), motion.jointX.estimated(9, currentFrame)], [motion.surfaceY(30, currentFrame), motion.jointY.estimated(13, currentFrame), motion.jointY.estimated(11, currentFrame), motion.jointY.estimated(9, currentFrame)], [motion.surfaceZ(30, currentFrame), motion.jointZ.estimated(13, currentFrame), motion.jointZ.estimated(11, currentFrame), motion.jointZ.estimated(9, currentFrame)], 'b');
@@ -192,10 +194,11 @@ for subjectIndex = 1:length(subjects)
             smoothedHead = plot3d([motion.jointX.smoothed(1, currentFrame), elementPositionsX(ELEMENT_TRA_L), elementPositionsX(ELEMENT_TRA_R), motion.jointX.smoothed(1, currentFrame)], [motion.jointY.smoothed(1, currentFrame), elementPositionsY(ELEMENT_TRA_L), elementPositionsY(ELEMENT_TRA_R), motion.jointY.smoothed(1, currentFrame)], [motion.jointZ.smoothed(1, currentFrame), elementPositionsZ(ELEMENT_TRA_L), elementPositionsZ(ELEMENT_TRA_R), motion.jointZ.smoothed(1, currentFrame)], 'c');
             smoothedLeftArm = plot3d([motion.jointX.smoothed(1, currentFrame), motion.jointX.smoothed(2, currentFrame), motion.jointX.smoothed(4, currentFrame), elementPositionsX(ELEMENT_WRI_L)], [motion.jointY.smoothed(1, currentFrame), motion.jointY.smoothed(2, currentFrame), motion.jointY.smoothed(4, currentFrame), elementPositionsY(ELEMENT_WRI_L)], [motion.jointZ.smoothed(1, currentFrame), motion.jointZ.smoothed(2, currentFrame), motion.jointZ.smoothed(4, currentFrame), elementPositionsZ(ELEMENT_WRI_L)], 'c');
             smoothedRightArm = plot3d([motion.jointX.smoothed(1, currentFrame), motion.jointX.smoothed(3, currentFrame), motion.jointX.smoothed(5, currentFrame), elementPositionsX(ELEMENT_WRI_R)], [motion.jointY.smoothed(1, currentFrame), motion.jointY.smoothed(3, currentFrame), motion.jointY.smoothed(5, currentFrame), elementPositionsY(ELEMENT_WRI_R)], [motion.jointZ.smoothed(1, currentFrame), motion.jointZ.smoothed(3, currentFrame), motion.jointZ.smoothed(5, currentFrame), elementPositionsZ(ELEMENT_WRI_R)], 'c');
-            smoothedSpinal = plot3d([motion.jointX.smoothed(6, currentFrame), motion.jointX.smoothed(1, currentFrame)], [motion.jointY.smoothed(6, currentFrame), motion.jointY.smoothed(1, currentFrame)], [motion.jointZ.smoothed(6, currentFrame), motion.jointZ.smoothed(1, currentFrame)], 'c');
-            smoothedPelvis = plot3d([motion.jointX.smoothed(6, currentFrame), motion.jointX.smoothed(7, currentFrame), motion.jointX.smoothed(8, currentFrame), motion.jointX.smoothed(6, currentFrame)], [motion.jointY.smoothed(6, currentFrame), motion.jointY.smoothed(7, currentFrame), motion.jointY.smoothed(8, currentFrame), motion.jointY.smoothed(6, currentFrame)], [motion.jointZ.smoothed(6, currentFrame), motion.jointZ.smoothed(7, currentFrame), motion.jointZ.smoothed(8, currentFrame), motion.jointZ.smoothed(6, currentFrame)], 'c');
-            smoothedLeftLeg = plot3d([motion.jointX.smoothed(7, currentFrame), motion.jointX.smoothed(9, currentFrame), motion.jointX.smoothed(11, currentFrame), elementPositionsX(ELEMENT_MT2_L)], [motion.jointY.smoothed(7, currentFrame), motion.jointY.smoothed(9, currentFrame), motion.jointY.smoothed(11, currentFrame), elementPositionsY(ELEMENT_MT2_L)], [motion.jointZ.smoothed(7, currentFrame), motion.jointZ.smoothed(9, currentFrame), motion.jointZ.smoothed(11, currentFrame), elementPositionsZ(ELEMENT_MT2_L)], 'c');
-            smoothedRightLeg = plot3d([motion.jointX.smoothed(8, currentFrame), motion.jointX.smoothed(10, currentFrame), motion.jointX.smoothed(12, currentFrame), elementPositionsX(ELEMENT_MT2_R)], [motion.jointY.smoothed(8, currentFrame), motion.jointY.smoothed(10, currentFrame), motion.jointY.smoothed(12, currentFrame), elementPositionsY(ELEMENT_MT2_R)], [motion.jointZ.smoothed(8, currentFrame), motion.jointZ.smoothed(10, currentFrame), motion.jointZ.smoothed(12, currentFrame), elementPositionsZ(ELEMENT_MT2_R)], 'c');
+            smoothedThorax = plot3d([motion.jointX.smoothed(6, currentFrame), motion.jointX.smoothed(1, currentFrame)], [motion.jointY.smoothed(6, currentFrame), motion.jointY.smoothed(1, currentFrame)], [motion.jointZ.smoothed(6, currentFrame), motion.jointZ.smoothed(1, currentFrame)], 'c');
+            smoothedAbdomen = plot3d([motion.jointX.smoothed(7, currentFrame), motion.jointX.smoothed(6, currentFrame)], [motion.jointY.smoothed(7, currentFrame), motion.jointY.smoothed(6, currentFrame)], [motion.jointZ.smoothed(7, currentFrame), motion.jointZ.smoothed(6, currentFrame)], 'c');
+            smoothedPelvis = plot3d([motion.jointX.smoothed(7, currentFrame), motion.jointX.smoothed(8, currentFrame), motion.jointX.smoothed(9, currentFrame), motion.jointX.smoothed(7, currentFrame)], [motion.jointY.smoothed(7, currentFrame), motion.jointY.smoothed(8, currentFrame), motion.jointY.smoothed(9, currentFrame), motion.jointY.smoothed(7, currentFrame)], [motion.jointZ.smoothed(7, currentFrame), motion.jointZ.smoothed(8, currentFrame), motion.jointZ.smoothed(9, currentFrame), motion.jointZ.smoothed(7, currentFrame)], 'c');
+            smoothedLeftLeg = plot3d([motion.jointX.smoothed(8, currentFrame), motion.jointX.smoothed(10, currentFrame), motion.jointX.smoothed(12, currentFrame), elementPositionsX(ELEMENT_MT2_L)], [motion.jointY.smoothed(8, currentFrame), motion.jointY.smoothed(10, currentFrame), motion.jointY.smoothed(12, currentFrame), elementPositionsY(ELEMENT_MT2_L)], [motion.jointZ.smoothed(8, currentFrame), motion.jointZ.smoothed(10, currentFrame), motion.jointZ.smoothed(12, currentFrame), elementPositionsZ(ELEMENT_MT2_L)], 'c');
+            smoothedRightLeg = plot3d([motion.jointX.smoothed(9, currentFrame), motion.jointX.smoothed(11, currentFrame), motion.jointX.smoothed(13, currentFrame), elementPositionsX(ELEMENT_MT2_R)], [motion.jointY.smoothed(9, currentFrame), motion.jointY.smoothed(11, currentFrame), motion.jointY.smoothed(13, currentFrame), elementPositionsY(ELEMENT_MT2_R)], [motion.jointZ.smoothed(9, currentFrame), motion.jointZ.smoothed(11, currentFrame), motion.jointZ.smoothed(13, currentFrame), elementPositionsZ(ELEMENT_MT2_R)], 'c');
             
             % Update figure
             drawnow;
@@ -212,14 +215,16 @@ for subjectIndex = 1:length(subjects)
                 delete(estimatedHead);
                 delete(estimatedLeftArm);
                 delete(estimatedRightArm);
-                delete(estimatedSpinal);
+                delete(estimatedThorax);
+                delete(estimatedAbdomen);
                 delete(estimatedPelvis);
                 delete(estimatedLeftLeg);
                 delete(estimatedRightLeg);
                 delete(smoothedHead);
                 delete(smoothedLeftArm);
                 delete(smoothedRightArm);
-                delete(smoothedSpinal);
+                delete(smoothedThorax);
+                delete(smoothedAbdomen);
                 delete(smoothedPelvis);
                 delete(smoothedLeftLeg);
                 delete(smoothedRightLeg);

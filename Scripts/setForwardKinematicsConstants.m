@@ -5,7 +5,7 @@
 % Technische Universität Darmstadt
 % Department of Computer Science
 % Simulation, Systems Optimization and Robotics Group
-% Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2015
+% Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2016
 % Licensed under BSD 3-Clause License
 % ------------------------------------------------------
 
@@ -27,23 +27,25 @@ JOINT_rSJY_R = 14;
 JOINT_rSJZ_R = 15;
 JOINT_rEJZ_L = 16;
 JOINT_rEJZ_R = 17;
-JOINT_rLLJX = 18;
-JOINT_rLLJY = 19;
-JOINT_rLLJZ = 20;
-JOINT_rHJX_L = 21;
-JOINT_rHJY_L = 22;
-JOINT_rHJZ_L = 23;
-JOINT_rHJX_R = 24;
-JOINT_rHJY_R = 25;
-JOINT_rHJZ_R = 26;
-JOINT_rKJZ_L = 27;
-JOINT_rKJZ_R = 28;
-JOINT_rAJX_L = 29;
-JOINT_rAJY_L = 30;
-JOINT_rAJZ_L = 31;
-JOINT_rAJX_R = 32;
-JOINT_rAJY_R = 33;
-JOINT_rAJZ_R = 34;
+JOINT_rULJX = 18;
+JOINT_rULJY = 19;
+JOINT_rULJZ = 20;
+JOINT_rLLJX = 21;
+JOINT_rLLJZ = 22;
+JOINT_rHJX_L = 23;
+JOINT_rHJY_L = 24;
+JOINT_rHJZ_L = 25;
+JOINT_rHJX_R = 26;
+JOINT_rHJY_R = 27;
+JOINT_rHJZ_R = 28;
+JOINT_rKJZ_L = 29;
+JOINT_rKJZ_R = 30;
+JOINT_rAJX_L = 31;
+JOINT_rAJY_L = 32;
+JOINT_rAJZ_L = 33;
+JOINT_rAJX_R = 34;
+JOINT_rAJY_R = 35;
+JOINT_rAJZ_R = 36;
 JOINT_Total = JOINT_rAJZ_R;
 ELEMENT_TRA_L = 1;
 ELEMENT_TRA_R = 2;
@@ -84,13 +86,14 @@ ELEMENT_SJ_L = 36;
 ELEMENT_SJ_R = 37;
 ELEMENT_EJ_L = 38;
 ELEMENT_EJ_R = 39;
-ELEMENT_LLJ = 40;
-ELEMENT_HJ_L = 41;
-ELEMENT_HJ_R = 42;
-ELEMENT_KJ_L = 43;
-ELEMENT_KJ_R = 44;
-ELEMENT_AJ_L = 45;
-ELEMENT_AJ_R = 46;
+ELEMENT_ULJ = 40;
+ELEMENT_LLJ = 41;
+ELEMENT_HJ_L = 42;
+ELEMENT_HJ_R = 43;
+ELEMENT_KJ_L = 44;
+ELEMENT_KJ_R = 45;
+ELEMENT_AJ_L = 46;
+ELEMENT_AJ_R = 47;
 ELEMENT_MarkerStart = ELEMENT_TRA_L;
 ELEMENT_MarkerEnd = ELEMENT_MT5_R;
 ELEMENT_JointStart = ELEMENT_LNJ;

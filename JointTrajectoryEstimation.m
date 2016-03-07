@@ -38,8 +38,8 @@ datasets = {
     '8' ...
 };
 subjects = {
-    'A',...
-    'B'...
+    'A', ...
+    'B' ...
 };
 
 % Add functions to search path
@@ -72,7 +72,8 @@ for subjectIndex = 1:length(subjects)
         subject, ...
         0, ...
         createParameterVector('head', parameters), ...
-        createParameterVector('torso', parameters), ...
+        createParameterVector('thorax', parameters), ...
+        createParameterVector('abdomen', parameters), ...
         createParameterVector('pelvis', parameters), ...
         createParameterVector('upperArm_L', parameters), ...
         createParameterVector('upperArm_R', parameters), ...
@@ -207,47 +208,40 @@ for subjectIndex = 1:length(subjects)
         end
         for index = ELEMENT_JointStart:ELEMENT_JointEnd
            
-            if index < ELEMENT_LLJ
-                Z(:, (index - 1) * 3 + 1) = motion.jointX.estimated(index - ELEMENT_JointStart + 1, 1:T)';
-                Z(:, (index - 1) * 3 + 2) = motion.jointY.estimated(index - ELEMENT_JointStart + 1, 1:T)';
-                Z(:, (index - 1) * 3 + 3) = motion.jointZ.estimated(index - ELEMENT_JointStart + 1, 1:T)';
-            elseif index >= ELEMENT_LLJ
-                Z(:, (index - 1) * 3 + 1) = motion.jointX.estimated(index - ELEMENT_JointStart + 2, 1:T)';
-                Z(:, (index - 1) * 3 + 2) = motion.jointY.estimated(index - ELEMENT_JointStart + 2, 1:T)';
-                Z(:, (index - 1) * 3 + 3) = motion.jointZ.estimated(index - ELEMENT_JointStart + 2, 1:T)';
-            end
+            Z(:, (index - 1) * 3 + 1) = motion.jointX.estimated(index - ELEMENT_JointStart + 1, 1:T)';
+            Z(:, (index - 1) * 3 + 2) = motion.jointY.estimated(index - ELEMENT_JointStart + 1, 1:T)';
+            Z(:, (index - 1) * 3 + 3) = motion.jointZ.estimated(index - ELEMENT_JointStart + 1, 1:T)';
             
         end
-        
-        % Set initial values
-        P0 = eye(n);
-        x0 = zeros(n, 1);
-        x0((JOINT_pBJX - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(1);
-        x0((JOINT_pBJY - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(2);
-        x0((JOINT_pBJZ - 1) * factor + 1) = parameters.joints.absolutePosition.LLJ(3);
+
+        % Set initial joint positions
+        initialJointPositions = zeros((n / factor), 1);
+        initialJointPositions(JOINT_pBJX) = parameters.joints.absolutePosition.LLJ(1);
+        initialJointPositions(JOINT_pBJY) = parameters.joints.absolutePosition.LLJ(2);
+        initialJointPositions(JOINT_pBJZ) = parameters.joints.absolutePosition.LLJ(3);
         if strcmp(subject, 'A')
-            x0((JOINT_rBJY - 1) * factor + 1) = -pi / 2;
+            initialJointPositions(JOINT_rBJY) = -pi / 2;
         end
-        
-        % Optimize initial values
+
+        % Optimize initial joint positions
         z = Z(1, :);
-        g = @(x, p) applyForwardKinematics(x, n, m, libraryName, processModelType)';
+        g = @(x, p) applyForwardKinematics(x, (n / factor), m, libraryName, 'constantPosition')';
         options = optimset('Display', 'off');
-        lb = -pi / 2 * ones(n, 1);
-        ub = pi / 2 * ones(n, 1);
-        lb((1 - 1) * factor + 1) = -1500.0;
-        lb((2 - 1) * factor + 1) = -1500.0;
-        lb((3 - 1) * factor + 1) = -1500.0;
-        lb((4 - 1) * factor + 1) = -pi;
-        lb((5 - 1) * factor + 1) = -pi;
-        lb((6 - 1) * factor + 1) = -pi;
-        ub((1 - 1) * factor + 1) = 1500.0;
-        ub((2 - 1) * factor + 1) = 1500.0;
-        ub((3 - 1) * factor + 1) = 1500.0;
-        ub((4 - 1) * factor + 1) = pi;
-        ub((5 - 1) * factor + 1) = pi;
-        ub((6 - 1) * factor + 1) = pi;
-        [x0, r, ~, e] = lsqcurvefit(g, x0, [], z, lb, ub, options);
+        lb = -pi / 2 * ones((n / factor), 1);
+        ub = pi / 2 * ones((n / factor), 1);
+        lb(1) = -1500.0;
+        lb(2) = -1500.0;
+        lb(3) = -1500.0;
+        lb(4) = -pi;
+        lb(5) = -pi;
+        lb(6) = -pi;
+        ub(1) = 1500.0;
+        ub(2) = 1500.0;
+        ub(3) = 1500.0;
+        ub(4) = pi;
+        ub(5) = pi;
+        ub(6) = pi;
+        [initialJointPositions, r, ~, e] = lsqcurvefit(g, initialJointPositions, [], z, lb, ub, options);
         if e <= 0
             
             % Unload HuMod library
@@ -259,6 +253,15 @@ for subjectIndex = 1:length(subjects)
             
         end
         fprintf('STATUS: Initial values optimized with a squared residual of %.4f.\n', r);
+        
+        % Set initial values
+        P0 = eye(n);
+        x0 = zeros(n, 1);
+        for index = 1:(n / factor)
+            
+            x0((index - 1) * factor + 1) = initialJointPositions(index);
+            
+        end
         
         % Apply Extended Kalman Smoother
         X = extendedKalmanSmoother(Z, f, h, dfdx, dfdw, dhdx, dhdv, Q, R, x0, P0);
@@ -282,8 +285,10 @@ for subjectIndex = 1:length(subjects)
             'rSJZ_R', ...
             'rEJZ_L', ...
             'rEJZ_R', ...
+            'rULJX', ...
+            'rULJY', ...
+            'rULJZ', ...
             'rLLJX', ...
-            'rLLJY', ...
             'rLLJZ', ...
             'rHJX_L', ...
             'rHJY_L', ...
@@ -369,6 +374,7 @@ for subjectIndex = 1:length(subjects)
                 'SJ_R', ...
                 'EJ_L', ...
                 'EJ_R', ...
+                'ULJ', ...
                 'LLJ', ...
                 'HJ_L', ...
                 'HJ_R', ...
