@@ -107,7 +107,7 @@ for subjectIndex = 1:length(subjects)
         delete(information);
         delete(markers);
 
-        title([dataset, ' ', name, ' - HuMoD Database']);
+        title([name, ' - HuMoD Database']);
         for currentFrame = startFrame:endFrame
 
             % Plot information text

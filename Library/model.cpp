@@ -2,7 +2,7 @@
 // Technische Universität Darmstadt
 // Department of Computer Science
 // Simulation, Systems Optimization and Robotics Group
-// Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2015
+// Janis Wojtusch (wojtusch@sim.tu-darmstadt.de), 2016
 // Licensed under BSD 3-Clause License
 // ------------------------------------------------------
 

@@ -86,7 +86,7 @@ for subjectIndex = 1:length(subjects)
                 xlabel('Time in s');
 
             end
-            suplabel([dataset, ' ', name, ' - ', filterAlgorithm, ' (', filterVariant, ') - HuMoD Database']);
+            suplabel([name, ' - ', filterAlgorithm, ' (', filterVariant, ') - HuMoD Database']);
         end
 
         % Save figure

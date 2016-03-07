@@ -101,7 +101,7 @@ for subjectIndex = 1:length(subjects)
             xlabel('Time in s');
             ylabel('Force in N');
             grid on;
-        suplabel([dataset, ' ', name, ' - HuMoD Database']);
+        suplabel([name, ' - HuMoD Database']);
         
         % Save figure
         saveTightFigure(visualization, [savePath, subject, filesep, dataset, '.png']);

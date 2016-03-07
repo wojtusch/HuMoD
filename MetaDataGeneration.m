@@ -17,7 +17,7 @@ close all;
 addpath('Scripts');
 
 % Set parameters
-version = '1.2';
+version = '1.3';
 datasets = {
     '1.1', ...
     '1.2', ...
