@@ -54,3 +54,5 @@ for dataIndex = (1 + windowOffset):(dataLength + windowOffset)
         filteredData(dataIndex - windowOffset) = filteredData(dataIndex - windowOffset) + coefficients(coefficientIndex) * rawData(dataIndex + (coefficientIndex - windowOffset - 1));      
     end
 end
+
+end

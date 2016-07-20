@@ -11,6 +11,7 @@
 % ------------------------------------------------------
 
 function distance = getAverageDistance(point1, type1, point2, type2, frameStart, frameEnd)
+
 frameStart = ceil(abs(frameStart));
 frameEnd = ceil(abs(frameEnd));
 list = evalin('caller', 'who');
@@ -66,4 +67,5 @@ else
     distance = [];
     fprintf('ERROR: No motion data variable found!\n');
 end
+
 end

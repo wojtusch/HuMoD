@@ -70,3 +70,5 @@ for index = 1:(m / 3)
     z((index - 1) * 3 + 3) = elementPositionsZ(index);
 
 end
+
+end

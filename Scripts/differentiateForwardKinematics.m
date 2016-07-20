@@ -60,3 +60,5 @@ for index = 1:(n / factor)
     dhdx(:, (index - 1) * factor + 1) = elementJacobian(((index - 1) * m + 1):(index * m));
 
 end
+
+end

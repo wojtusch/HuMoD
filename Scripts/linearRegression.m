@@ -18,3 +18,5 @@ else
     regressionIntercept = [];
     regressionSlope = [];
 end
+
+end

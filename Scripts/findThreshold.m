@@ -44,4 +44,3 @@ for binIndex = 1:binSteps
 end
 
 end
-

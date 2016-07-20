@@ -53,3 +53,5 @@ b = [ ...
 options = optimset('LargeScale', 'off', 'Display', 'off');
 p = lsqlin(C, d, [], [], A, b, [], [], [], options);
 dataSegment = polyval(p, dataX);
+
+end

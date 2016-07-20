@@ -307,3 +307,5 @@ otherwise
     fprintf('ERROR: %s is not a body segment!\n', segment);
 
 end
+
+end

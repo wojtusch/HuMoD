@@ -10,6 +10,7 @@
 % ------------------------------------------------------
 
 function coordinates = getSensor(sensor)
+
 list = evalin('caller', 'who');
 if ~isempty(find(ismember(list, 'ground'), 1))
     coordinates = zeros(3, 1);
@@ -27,5 +28,6 @@ else
     coordinates = [];
     fprintf('ERROR: No ground data variable found!\n');
 end
+
 end
 

@@ -9,7 +9,8 @@
 % ------------------------------------------------------
 
 function vector = rotateVector(vector, angle, axis)
-if isequal(size(vector), [3, 1]) && isequal(size(axis), [3, 1])
+
+if isequal(size(vector, 1), 3) && isequal(size(axis), [3, 1])
     axis = axis / norm(axis);
     R = [...
     axis(1)^2 * (1 - cos(angle)) + cos(angle), axis(1) * axis(2) * (1 - cos(angle)) - axis(3) * sin(angle), axis(1) * axis(3) * (1 - cos(angle)) + axis(2) * sin(angle); ...
@@ -20,5 +21,5 @@ if isequal(size(vector), [3, 1]) && isequal(size(axis), [3, 1])
 else
     fprintf('ERROR: Wrong vector or axis dimension!\n');
 end
-end
 
+end

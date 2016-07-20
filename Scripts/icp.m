@@ -91,7 +91,7 @@ function [TR, TT] = icp(model,data,max_iter,min_iter,fitting,thres,init_flag,tes
 %
 %   icp version 1.4
 %
-%   written by Per Bergström 2007-03-07
+%   written by Per BergstrÃ¶m 2007-03-07
 
 if nargin<1
 

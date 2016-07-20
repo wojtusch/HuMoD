@@ -11,6 +11,7 @@
 % ------------------------------------------------------
 
 function coordinates = getJoint(joint, type, frames)
+
 frames = ceil(abs(frames));
 list = evalin('caller', 'who');
 if ~isempty(find(ismember(list, 'motion'), 1))
@@ -37,4 +38,5 @@ else
     coordinates = [];
     fprintf('ERROR: No motion data variable found!\n');
 end
+
 end

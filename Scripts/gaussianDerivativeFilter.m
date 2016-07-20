@@ -22,3 +22,5 @@ filterOffset = (length(dG) - 1) / 2;
 dataLength = length(filteredData);
 filteredData = filteredData((filterOffset + 1):(dataLength - filterOffset));
 
+end
+

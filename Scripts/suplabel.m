@@ -1,4 +1,4 @@
-function [ax,h]=suplabel(text,whichLabel,supAxes)
+function [ax, h]=suplabel(text, whichLabel, supAxes)
 % PLaces text as a title, xlabel, or ylabel on a group of subplots.
 % Returns a handle to the label and a handle to the axis.
 %  [ax,h]=suplabel(text,whichLabel,supAxes)

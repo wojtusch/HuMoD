@@ -11,6 +11,7 @@
 % ------------------------------------------------------
 
 function coordinates = getAverageMarker(marker, type, frameStart, frameEnd)
+
 frameStart = ceil(abs(frameStart));
 frameEnd = ceil(abs(frameEnd));
 list = evalin('caller', 'who');
@@ -40,5 +41,6 @@ else
     coordinates = [];
     fprintf('ERROR: No motion data variable found!\n');
 end
+
 end
 

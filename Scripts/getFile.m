@@ -10,6 +10,7 @@
 % ------------------------------------------------------
 
 function file = getFile(subject, dataset)
+
 file = 0;
 if (strcmp(subject, 'A') || strcmp(subject, 'B'))
     if strcmp(subject, 'A')
@@ -56,4 +57,5 @@ if (strcmp(subject, 'A') || strcmp(subject, 'B'))
         fprintf('ERROR: File not found! Please modify the global path in getPath.m and the local paths in getFile.m.\n');
     end
 end
+
 end
