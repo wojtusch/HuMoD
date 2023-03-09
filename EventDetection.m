@@ -483,28 +483,28 @@ if ishandle(axesHandle) && isnumeric(index) && isnumeric(azimuth) && isnumeric(e
     axes(axesHandle);
     if index > 0
         % Plot joints
-        plot3d(handles.motion.jointX(:, index), handles.motion.jointY(:, index), handles.motion.jointZ(:, index), 'b*');
+        plot3d(handles.motion.jointX.estimated(:, index), handles.motion.jointY.estimated(:, index), handles.motion.jointZ.estimated(:, index), 'b*');
 
         % Plot head
-        plot3d([handles.motion.jointX(1, index), handles.motion.surfaceX(1, index), handles.motion.surfaceX(2, index), handles.motion.jointX(1, index)], [handles.motion.jointY(1, index), handles.motion.surfaceY(1, index), handles.motion.surfaceY(2, index), handles.motion.jointY(1, index)], [handles.motion.jointZ(1, index), handles.motion.surfaceZ(1, index), handles.motion.surfaceZ(2, index), handles.motion.jointZ(1, index)], 'k');
+        plot3d([handles.motion.jointX.estimated(1, index), handles.motion.surfaceX(1, index), handles.motion.surfaceX(2, index), handles.motion.jointX.estimated(1, index)], [handles.motion.jointY.estimated(1, index), handles.motion.surfaceY(1, index), handles.motion.surfaceY(2, index), handles.motion.jointY.estimated(1, index)], [handles.motion.jointZ.estimated(1, index), handles.motion.surfaceZ(1, index), handles.motion.surfaceZ(2, index), handles.motion.jointZ.estimated(1, index)], 'k');
 
         % Plot left arm
-        plot3d([handles.motion.jointX(1, index), handles.motion.jointX(2, index), handles.motion.jointX(4, index), handles.motion.markerX(8, index)], [handles.motion.jointY(1, index), handles.motion.jointY(2, index), handles.motion.jointY(4, index), handles.motion.markerY(8, index)], [handles.motion.jointZ(1, index), handles.motion.jointZ(2, index), handles.motion.jointZ(4, index), handles.motion.markerZ(8, index)], 'k');
+        plot3d([handles.motion.jointX.estimated(1, index), handles.motion.jointX.estimated(2, index), handles.motion.jointX.estimated(4, index), handles.motion.markerX(8, index)], [handles.motion.jointY.estimated(1, index), handles.motion.jointY.estimated(2, index), handles.motion.jointY.estimated(4, index), handles.motion.markerY(8, index)], [handles.motion.jointZ.estimated(1, index), handles.motion.jointZ.estimated(2, index), handles.motion.jointZ.estimated(4, index), handles.motion.markerZ(8, index)], 'k');
 
         % Plot right arm
-        plot3d([handles.motion.jointX(1, index), handles.motion.jointX(3, index), handles.motion.jointX(5, index), handles.motion.markerX(9, index)], [handles.motion.jointY(1, index), handles.motion.jointY(3, index), handles.motion.jointY(5, index), handles.motion.markerY(9, index)], [handles.motion.jointZ(1, index), handles.motion.jointZ(3, index), handles.motion.jointZ(5, index), handles.motion.markerZ(9, index)], 'k');
+        plot3d([handles.motion.jointX.estimated(1, index), handles.motion.jointX.estimated(3, index), handles.motion.jointX.estimated(5, index), handles.motion.markerX(9, index)], [handles.motion.jointY.estimated(1, index), handles.motion.jointY.estimated(3, index), handles.motion.jointY.estimated(5, index), handles.motion.markerY(9, index)], [handles.motion.jointZ.estimated(1, index), handles.motion.jointZ.estimated(3, index), handles.motion.jointZ.estimated(5, index), handles.motion.markerZ(9, index)], 'k');
 
         % Plot spinal
-        plot3d([handles.motion.jointX(7, index), handles.motion.jointX(6, index), handles.motion.jointX(1, index)], [handles.motion.jointY(7, index), handles.motion.jointY(6, index), handles.motion.jointY(1, index)], [handles.motion.jointZ(7, index), handles.motion.jointZ(6, index), handles.motion.jointZ(1, index)], 'k');
+        plot3d([handles.motion.jointX.estimated(7, index), handles.motion.jointX.estimated(6, index), handles.motion.jointX.estimated(1, index)], [handles.motion.jointY.estimated(7, index), handles.motion.jointY.estimated(6, index), handles.motion.jointY.estimated(1, index)], [handles.motion.jointZ.estimated(7, index), handles.motion.jointZ.estimated(6, index), handles.motion.jointZ.estimated(1, index)], 'k');
 
         % Plot pelvis
-        plot3d([handles.motion.jointX(7, index), handles.motion.jointX(8, index), handles.motion.jointX(9, index), handles.motion.jointX(7, index)], [handles.motion.jointY(7, index), handles.motion.jointY(8, index), handles.motion.jointY(9, index), handles.motion.jointY(7, index)], [handles.motion.jointZ(7, index), handles.motion.jointZ(8, index), handles.motion.jointZ(9, index), handles.motion.jointZ(7, index)], 'k');
+        plot3d([handles.motion.jointX.estimated(7, index), handles.motion.jointX.estimated(8, index), handles.motion.jointX.estimated(9, index), handles.motion.jointX.estimated(7, index)], [handles.motion.jointY.estimated(7, index), handles.motion.jointY.estimated(8, index), handles.motion.jointY.estimated(9, index), handles.motion.jointY.estimated(7, index)], [handles.motion.jointZ.estimated(7, index), handles.motion.jointZ.estimated(8, index), handles.motion.jointZ.estimated(9, index), handles.motion.jointZ.estimated(7, index)], 'k');
 
         % Plot left leg
-        plot3d([handles.motion.jointX(14, index), handles.motion.jointX(12, index), handles.motion.jointX(10, index), handles.motion.jointX(8, index)], [handles.motion.jointY(14, index), handles.motion.jointY(12, index), handles.motion.jointY(10, index), handles.motion.jointY(8, index)], [handles.motion.jointZ(14, index), handles.motion.jointZ(12, index), handles.motion.jointZ(10, index), handles.motion.jointZ(8, index)], 'r');
+        plot3d([handles.motion.jointX.estimated(14, index), handles.motion.jointX.estimated(12, index), handles.motion.jointX.estimated(10, index), handles.motion.jointX.estimated(8, index)], [handles.motion.jointY.estimated(14, index), handles.motion.jointY.estimated(12, index), handles.motion.jointY.estimated(10, index), handles.motion.jointY.estimated(8, index)], [handles.motion.jointZ.estimated(14, index), handles.motion.jointZ.estimated(12, index), handles.motion.jointZ.estimated(10, index), handles.motion.jointZ.estimated(8, index)], 'r');
 
         % Plot right leg
-        plot3d([handles.motion.jointX(15, index), handles.motion.jointX(13, index), handles.motion.jointX(11, index), handles.motion.jointX(9, index)], [handles.motion.jointY(15, index), handles.motion.jointY(13, index), handles.motion.jointY(11, index), handles.motion.jointY(9, index)], [handles.motion.jointZ(15, index), handles.motion.jointZ(13, index), handles.motion.jointZ(11, index), handles.motion.jointZ(9, index)], 'b');
+        plot3d([handles.motion.jointX.estimated(15, index), handles.motion.jointX.estimated(13, index), handles.motion.jointX.estimated(11, index), handles.motion.jointX.estimated(9, index)], [handles.motion.jointY.estimated(15, index), handles.motion.jointY.estimated(13, index), handles.motion.jointY.estimated(11, index), handles.motion.jointY.estimated(9, index)], [handles.motion.jointZ.estimated(15, index), handles.motion.jointZ.estimated(13, index), handles.motion.jointZ.estimated(11, index), handles.motion.jointZ.estimated(9, index)], 'b');
 
         % Plot objects
         if strcmp(handles.dataset, '5.1') || strcmp(handles.dataset, '5.2') || strcmp(handles.dataset, '7')
